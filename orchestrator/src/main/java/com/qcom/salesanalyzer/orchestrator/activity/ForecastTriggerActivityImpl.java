@@ -23,16 +23,28 @@ public class ForecastTriggerActivityImpl implements ForecastTriggerActivity {
     private String forecasterBaseUrl;
 
     @Override
-    public void submitForecastRequest(String tenantId) {
-        log.info("Submitting forecast request for tenant {}", tenantId);
+    @SuppressWarnings("unchecked")
+    public String submitForecastRequest(String tenantId, String algorithm, String callbackUrl) {
+        log.info("Submitting forecast request for tenant={}, algorithm={}, callbackUrl={}", tenantId, algorithm, callbackUrl);
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             Map<String, String> payload = new HashMap<>();
             payload.put("tenantId", tenantId);
+            payload.put("algorithm", algorithm);
+            payload.put("callbackUrl", callbackUrl);
             HttpEntity<Map<String, String>> request = new HttpEntity<>(payload, headers);
-            restTemplate.postForEntity(forecasterBaseUrl + "/api/forecast/trigger", request, String.class);
-            log.info("Forecast request submitted for tenant {}", tenantId);
+
+            var response = restTemplate.postForEntity(
+                    forecasterBaseUrl + "/api/forecast/trigger", request, Map.class);
+
+            String workflowName = "unknown";
+            if (response.getBody() != null) {
+                workflowName = String.valueOf(response.getBody().getOrDefault("workflowName", "unknown"));
+            }
+
+            log.info("Forecast submitted for tenant={}: argoWorkflow={}", tenantId, workflowName);
+            return workflowName;
         } catch (Exception e) {
             log.error("Failed to submit forecast for tenant {}: {}", tenantId, e.getMessage(), e);
             throw new RuntimeException("Forecast submission failed: " + e.getMessage(), e);

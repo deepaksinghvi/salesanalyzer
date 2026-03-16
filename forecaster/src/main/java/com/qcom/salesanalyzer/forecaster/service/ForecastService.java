@@ -31,11 +31,11 @@ public class ForecastService {
         return applicationContext.getBean(ForecastService.class);
     }
 
-    public String triggerArgoForecast(String tenantId, String algorithm) {
+    public String triggerArgoForecast(String tenantId, String algorithm, String callbackUrl) {
         String algo = (algorithm != null && !algorithm.isBlank()) ? algorithm : "prophet";
         log.info("Triggering Argo forecast workflow for tenant {} using algorithm={}", tenantId, algo);
         try {
-            String workflowName = argoWorkflowService.submitForecastWorkflow(tenantId, algo);
+            String workflowName = argoWorkflowService.submitForecastWorkflow(tenantId, algo, callbackUrl);
             log.info("Argo workflow '{}' submitted for tenant {} (algorithm={}) — it will write forecast data and refresh the MV on completion",
                     workflowName, tenantId, algo);
             return workflowName;

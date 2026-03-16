@@ -37,6 +37,6 @@ public class WorkflowScheduler {
                         .setTaskQueue("FORECAST_TRIGGER_TASK_QUEUE")
                         .setWorkflowId("weekly-forecast-" + System.currentTimeMillis())
                         .build());
-        WorkflowClient.start(workflow::triggerWeeklyForecast);
+        WorkflowClient.start(workflow::triggerForecast, "ALL_TENANTS", "xgboost");
     }
 }

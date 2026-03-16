@@ -14,6 +14,8 @@ spec:
         value: "postgresql://postgres:postgres@host.minikube.internal:5432/salesanalyzer"
       - name: forecast-horizon-days
         value: "30"
+      - name: callback-url
+        value: ""
 
   templates:
     - name: forecast-pipeline
@@ -46,6 +48,10 @@ spec:
           - name: refresh-mv
             template: refresh-materialized-view
             dependencies: [write-results]
+          - name: notify-orchestrator
+            template: notify-callback
+            dependencies: [refresh-mv]
+            when: "'{{workflow.parameters.callback-url}}' != ''"
 
     - name: extract-data
       inputs:
@@ -261,6 +267,26 @@ spec:
         env:
           - name: DB_URL
             value: "{{workflow.parameters.db-url}}"
+
+    - name: notify-callback
+      container:
+        image: python:3.11-slim
+        command: [sh, -c]
+        args:
+          - |
+            pip install -q requests
+            python -c "
+            import requests, os
+            callback_url = os.environ['CALLBACK_URL']
+            if callback_url:
+                resp = requests.post(callback_url, json={'status': 'COMPLETED'}, timeout=10)
+                print(f'Callback sent to {callback_url}: {resp.status_code}')
+            else:
+                print('No callback URL — skipping')
+            "
+        env:
+          - name: CALLBACK_URL
+            value: "{{workflow.parameters.callback-url}}"
 
     - name: refresh-materialized-view
       container:

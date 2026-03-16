@@ -21,7 +21,7 @@ public class ForecastController {
     public ResponseEntity<Map<String, String>> triggerForecast(@RequestBody ForecastRequest request) {
         String algo = request.getAlgorithm() != null ? request.getAlgorithm() : "prophet";
         log.info("Forecast trigger received for tenantId={}, algorithm={}", request.getTenantId(), algo);
-        String result = forecastService.triggerArgoForecast(request.getTenantId(), algo);
+        String result = forecastService.triggerArgoForecast(request.getTenantId(), algo, request.getCallbackUrl());
         // Only refresh MV immediately when local fallback was used;
         // Argo workflows refresh the MV themselves on completion.
         if (result.startsWith("LOCAL_FORECAST_COMPLETE")) {

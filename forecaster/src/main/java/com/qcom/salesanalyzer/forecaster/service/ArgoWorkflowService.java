@@ -57,8 +57,8 @@ public class ArgoWorkflowService {
     }
     private final ObjectMapper jsonMapper = new ObjectMapper();
 
-    public String submitForecastWorkflow(String tenantId, String algorithm) throws Exception {
-        Map<String, Object> workflow = buildWorkflowPayload(tenantId, algorithm);
+    public String submitForecastWorkflow(String tenantId, String algorithm, String callbackUrl) throws Exception {
+        Map<String, Object> workflow = buildWorkflowPayload(tenantId, algorithm, callbackUrl);
         Map<String, Object> body = Map.of("workflow", workflow);
         String json = jsonMapper.writeValueAsString(body);
 
@@ -80,7 +80,7 @@ public class ArgoWorkflowService {
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> buildWorkflowPayload(String tenantId, String algorithm) {
+    private Map<String, Object> buildWorkflowPayload(String tenantId, String algorithm, String callbackUrl) {
         String templateName = "xgboost".equalsIgnoreCase(algorithm) ? xgboostTemplate : prophetTemplate;
         String prefix = "xgboost".equalsIgnoreCase(algorithm) ? "xgb-forecast-" : "sales-forecast-";
 
@@ -88,12 +88,16 @@ public class ArgoWorkflowService {
         metadata.put("generateName", prefix + tenantId.substring(0, 8) + "-");
         metadata.put("namespace", namespace);
 
-        Map<String, Object> argument = new HashMap<>();
-        argument.put("name", "tenant-id");
-        argument.put("value", tenantId);
+        Map<String, Object> tenantArg = new HashMap<>();
+        tenantArg.put("name", "tenant-id");
+        tenantArg.put("value", tenantId);
+
+        Map<String, Object> callbackArg = new HashMap<>();
+        callbackArg.put("name", "callback-url");
+        callbackArg.put("value", callbackUrl != null ? callbackUrl : "");
 
         Map<String, Object> arguments = new HashMap<>();
-        arguments.put("parameters", List.of(argument));
+        arguments.put("parameters", List.of(tenantArg, callbackArg));
 
         Map<String, Object> spec = new HashMap<>();
         spec.put("workflowTemplateRef", Map.of("name", templateName));

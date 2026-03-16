@@ -18,8 +18,27 @@ public class ForecastTriggerWorkflowImpl implements ForecastTriggerWorkflow {
                             .build())
                     .build());
 
+    private String completionStatus = null;
+
     @Override
-    public void triggerWeeklyForecast() {
-        forecastActivity.submitForecastRequest("ALL_TENANTS");
+    public String triggerForecast(String tenantId, String algorithm) {
+        String workflowId = Workflow.getInfo().getWorkflowId();
+        String callbackUrl = "http://host.minikube.internal:8081/api/workflows/forecast-callback";
+
+        String argoWorkflowName = forecastActivity.submitForecastRequest(tenantId, algorithm,
+                callbackUrl + "?workflowId=" + workflowId);
+
+        // Wait for Argo to call back (up to 15 minutes)
+        boolean signaled = Workflow.await(Duration.ofMinutes(15), () -> completionStatus != null);
+
+        if (!signaled) {
+            return "TIMEOUT:argo=" + argoWorkflowName;
+        }
+        return completionStatus + ":argo=" + argoWorkflowName;
+    }
+
+    @Override
+    public void forecastCompleted(String status) {
+        this.completionStatus = status;
     }
 }

@@ -1,5 +1,6 @@
 package com.qcom.salesanalyzer.orchestrator.controller;
 
+import com.qcom.salesanalyzer.orchestrator.workflow.ForecastTriggerWorkflow;
 import com.qcom.salesanalyzer.orchestrator.workflow.SalesUploadWorkflow;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
@@ -40,5 +41,52 @@ public class WorkflowController {
                 "workflowId", "upload-" + jobId,
                 "status", "STARTED"
         ));
+    }
+
+    @PostMapping("/trigger-forecast")
+    public ResponseEntity<Map<String, String>> triggerForecast(@RequestBody Map<String, String> payload) {
+        String tenantId  = payload.getOrDefault("tenantId", "ALL_TENANTS");
+        String algorithm = payload.getOrDefault("algorithm", "xgboost");
+
+        String workflowId = "forecast-" + tenantId.substring(0, Math.min(8, tenantId.length()))
+                + "-" + System.currentTimeMillis();
+
+        log.info("Starting ForecastTriggerWorkflow: workflowId={}, tenantId={}, algorithm={}", workflowId, tenantId, algorithm);
+
+        ForecastTriggerWorkflow workflow = workflowClient.newWorkflowStub(
+                ForecastTriggerWorkflow.class,
+                WorkflowOptions.newBuilder()
+                        .setTaskQueue("FORECAST_TRIGGER_TASK_QUEUE")
+                        .setWorkflowId(workflowId)
+                        .build());
+
+        WorkflowClient.start(workflow::triggerForecast, tenantId, algorithm);
+
+        return ResponseEntity.ok(Map.of(
+                "workflowId", workflowId,
+                "tenantId", tenantId,
+                "algorithm", algorithm,
+                "status", "STARTED"
+        ));
+    }
+
+    @PostMapping("/forecast-callback")
+    public ResponseEntity<Map<String, String>> forecastCallback(
+            @RequestParam String workflowId,
+            @RequestBody Map<String, String> payload) {
+
+        String status = payload.getOrDefault("status", "COMPLETED");
+        log.info("Forecast callback received: workflowId={}, status={}", workflowId, status);
+
+        try {
+            ForecastTriggerWorkflow workflow = workflowClient.newWorkflowStub(
+                    ForecastTriggerWorkflow.class, workflowId);
+            workflow.forecastCompleted(status);
+            log.info("Signal sent to workflow {}: status={}", workflowId, status);
+            return ResponseEntity.ok(Map.of("workflowId", workflowId, "signaled", "true"));
+        } catch (Exception e) {
+            log.error("Failed to signal workflow {}: {}", workflowId, e.getMessage(), e);
+            return ResponseEntity.ok(Map.of("workflowId", workflowId, "signaled", "false", "error", e.getMessage()));
+        }
     }
 }
