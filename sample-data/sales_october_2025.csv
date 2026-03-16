@@ -1,0 +1,125 @@
+tenant_id,transaction_date,category_name,city,region,total_revenue,units_sold
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-01,Electronics,San Francisco,CA,4574.06,12
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-01,Clothing,Los Angeles,CA,798.26,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-01,Home & Garden,Los Angeles,CA,762.04,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-01,Sports,Austin,TX,1799.39,15
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-02,Electronics,Austin,TX,4518.55,10
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-02,Clothing,New York,NY,987.5,11
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-02,Home & Garden,Dallas,TX,944.79,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-02,Sports,San Francisco,CA,2324.34,13
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-03,Electronics,Austin,TX,5056.35,12
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-03,Clothing,San Francisco,CA,994.99,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-03,Home & Garden,New York,NY,1032.19,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-03,Sports,Austin,TX,1684.83,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-04,Electronics,New York,NY,3752.25,12
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-04,Clothing,New York,NY,961.35,11
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-04,Home & Garden,New York,NY,878.01,5
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-04,Sports,New York,NY,2013.95,15
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-05,Electronics,Seattle,WA,5108.44,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-05,Clothing,Chicago,IL,1073.33,5
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-05,Home & Garden,Austin,TX,977.55,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-05,Sports,Dallas,TX,2231.89,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-06,Electronics,Dallas,TX,4471.66,11
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-06,Clothing,New York,NY,1073.87,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-06,Home & Garden,San Francisco,CA,669.09,4
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-06,Sports,Dallas,TX,1744.18,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-07,Electronics,San Francisco,CA,4242.77,10
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-07,Clothing,Dallas,TX,1138.06,5
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-07,Home & Garden,Seattle,WA,945.19,4
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-07,Sports,Seattle,WA,2506.32,15
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-08,Electronics,Dallas,TX,5178.11,18
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-08,Clothing,New York,NY,1377.64,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-08,Home & Garden,New York,NY,912.05,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-08,Sports,Seattle,WA,2081.67,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-09,Electronics,Chicago,IL,3561.08,16
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-09,Clothing,San Francisco,CA,1555.13,5
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-09,Home & Garden,Chicago,IL,760.61,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-09,Sports,San Francisco,CA,2041.89,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-10,Electronics,San Francisco,CA,3521.4,15
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-10,Clothing,Austin,TX,899.4,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-10,Home & Garden,San Francisco,CA,956.17,4
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-10,Sports,Los Angeles,CA,2212.04,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-11,Electronics,Dallas,TX,4190.52,11
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-11,Clothing,New York,NY,933.87,5
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-11,Home & Garden,New York,NY,854.02,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-11,Sports,Austin,TX,2343.25,12
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-12,Electronics,San Francisco,CA,4014.53,10
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-12,Clothing,New York,NY,1019.12,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-12,Home & Garden,Seattle,WA,968.04,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-12,Sports,Austin,TX,1649.02,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-13,Electronics,Chicago,IL,4346.2,13
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-13,Clothing,Seattle,WA,880.53,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-13,Home & Garden,Austin,TX,662.21,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-13,Sports,Austin,TX,1838.59,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-14,Electronics,New York,NY,3449.47,11
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-14,Clothing,Chicago,IL,1253.16,10
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-14,Home & Garden,Los Angeles,CA,700.71,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-14,Sports,Austin,TX,2287.28,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-15,Electronics,Seattle,WA,3222.16,10
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-15,Clothing,Austin,TX,737.63,10
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-15,Home & Garden,San Francisco,CA,894.07,5
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-15,Sports,San Francisco,CA,2013.59,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-16,Electronics,Los Angeles,CA,5899.5,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-16,Clothing,Chicago,IL,1068.63,12
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-16,Home & Garden,Seattle,WA,1094.09,4
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-16,Sports,Dallas,TX,1559.63,14
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-17,Electronics,Chicago,IL,3787.73,11
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-17,Clothing,Chicago,IL,1429.37,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-17,Home & Garden,Dallas,TX,892.92,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-17,Sports,San Francisco,CA,2121.31,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-18,Electronics,San Francisco,CA,4561.65,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-18,Clothing,New York,NY,1311.89,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-18,Home & Garden,San Francisco,CA,1027.72,5
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-18,Sports,Los Angeles,CA,1665.38,13
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-19,Electronics,Los Angeles,CA,5712.78,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-19,Clothing,Austin,TX,1089.42,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-19,Home & Garden,Seattle,WA,789.76,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-19,Sports,Austin,TX,2363.3,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-20,Electronics,Chicago,IL,3881.35,18
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-20,Clothing,Seattle,WA,1177.92,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-20,Home & Garden,Chicago,IL,694.2,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-20,Sports,Austin,TX,2612.55,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-21,Electronics,Seattle,WA,4832.94,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-21,Clothing,San Francisco,CA,1315.53,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-21,Home & Garden,Austin,TX,851.39,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-21,Sports,Austin,TX,2390.83,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-22,Electronics,Chicago,IL,3237.9,18
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-22,Clothing,Los Angeles,CA,1056.68,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-22,Home & Garden,Chicago,IL,975.93,4
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-22,Sports,Chicago,IL,2131.54,10
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-23,Electronics,Chicago,IL,4134.17,18
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-23,Clothing,Seattle,WA,1297.16,12
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-23,Home & Garden,San Francisco,CA,1022.89,5
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-23,Sports,New York,NY,2310.76,15
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-24,Electronics,New York,NY,3951.91,17
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-24,Clothing,Dallas,TX,1279.49,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-24,Home & Garden,New York,NY,904.4,4
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-24,Sports,Austin,TX,1935.44,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-25,Electronics,Chicago,IL,3662.36,17
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-25,Clothing,San Francisco,CA,1185.08,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-25,Home & Garden,Austin,TX,636.04,4
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-25,Sports,Seattle,WA,1650.11,14
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-26,Electronics,Chicago,IL,4155.11,11
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-26,Clothing,San Francisco,CA,870.02,5
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-26,Home & Garden,Chicago,IL,829.69,4
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-26,Sports,Los Angeles,CA,2268.67,15
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-27,Electronics,Austin,TX,5522.81,15
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-27,Clothing,Los Angeles,CA,708.21,5
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-27,Home & Garden,Chicago,IL,939.11,5
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-27,Sports,Seattle,WA,2399.11,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-28,Electronics,Chicago,IL,3700.58,10
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-28,Clothing,Dallas,TX,1327.53,12
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-28,Home & Garden,Dallas,TX,804.18,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-28,Sports,Seattle,WA,2726.18,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-29,Electronics,Los Angeles,CA,4777.57,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-29,Clothing,Dallas,TX,856.62,12
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-29,Home & Garden,Dallas,TX,816.71,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-29,Sports,San Francisco,CA,1641.37,11
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-30,Electronics,Austin,TX,3732.8,18
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-30,Clothing,Chicago,IL,1582.17,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-30,Home & Garden,Chicago,IL,657.16,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-30,Sports,San Francisco,CA,2203.77,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-31,Electronics,Dallas,TX,2829.37,12
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-31,Clothing,Dallas,TX,1097.7,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-31,Home & Garden,Chicago,IL,931.99,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2025-10-31,Sports,Los Angeles,CA,2035.75,8

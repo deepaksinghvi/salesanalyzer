@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
-  name: sales-forecast-workflow
+  name: sales-forecast-xgboost-workflow
   namespace: argo
 spec:
   entrypoint: forecast-pipeline
@@ -26,7 +26,7 @@ spec:
                 - name: tenant-id
                   value: "{{workflow.parameters.tenant-id}}"
           - name: run-forecast
-            template: run-prophet-forecast
+            template: run-xgboost-forecast
             dependencies: [extract-actuals]
             arguments:
               parameters:
@@ -91,7 +91,7 @@ spec:
           - name: DB_URL
             value: "{{workflow.parameters.db-url}}"
 
-    - name: run-prophet-forecast
+    - name: run-xgboost-forecast
       inputs:
         parameters:
           - name: tenant-id
@@ -106,52 +106,120 @@ spec:
         command: [sh, -c]
         args:
           - |
-            pip install -q prophet pandas
+            pip install -q xgboost pandas numpy scikit-learn
             cat > /tmp/run_forecast.py << 'PYEOF'
-            import pandas as pd, base64, io, os
-            from prophet import Prophet
+            import pandas as pd, numpy as np, base64, io, os
+            from xgboost import XGBRegressor
+
             horizon = int(os.environ['HORIZON'])
             actuals_b64 = os.environ['ACTUALS_B64']
             csv_data = base64.b64decode(actuals_b64.encode()).decode()
             df = pd.read_csv(io.StringIO(csv_data))
             df['ds'] = pd.to_datetime(df['ds'])
-            results = []
-            # Aggregate to daily totals per category (not per location — locations are sparse)
+
+            # Aggregate to daily totals per category (locations are sparse)
             df_cat = df.groupby(['category_id', 'ds']).agg(
                 y=('y', 'sum'), units_sold=('units_sold', 'sum')
             ).reset_index()
             global_max_date = df_cat['ds'].max()
+
             # Compute location share of revenue per category from actuals
             loc_shares = df.groupby(['category_id', 'location_id'])['y'].sum().reset_index()
             cat_totals = loc_shares.groupby('category_id')['y'].sum().reset_index().rename(columns={'y': 'cat_total'})
             loc_shares = loc_shares.merge(cat_totals, on='category_id')
             loc_shares['share'] = loc_shares['y'] / loc_shares['cat_total']
+
+            def build_features(series_df):
+                """Build time-based and lag features for XGBoost from a daily time series."""
+                d = series_df.copy().sort_values('ds').reset_index(drop=True)
+                d['day_of_week'] = d['ds'].dt.dayofweek
+                d['day_of_month'] = d['ds'].dt.day
+                d['month'] = d['ds'].dt.month
+                d['week_of_year'] = d['ds'].dt.isocalendar().week.astype(int)
+                # Ordinal day (days since first date) to capture trend
+                d['day_ordinal'] = (d['ds'] - d['ds'].min()).dt.days
+                # Lag features — use available lags, fill missing with column mean
+                for lag in [1, 7, 14, 30]:
+                    d[f'lag_{lag}'] = d['y'].shift(lag)
+                # Rolling window stats
+                for win in [7, 14, 30]:
+                    d[f'roll_mean_{win}'] = d['y'].shift(1).rolling(window=win, min_periods=1).mean()
+                    d[f'roll_std_{win}'] = d['y'].shift(1).rolling(window=win, min_periods=1).std().fillna(0)
+                return d
+
+            FEATURE_COLS = [
+                'day_of_week', 'day_of_month', 'month', 'week_of_year', 'day_ordinal',
+                'lag_1', 'lag_7', 'lag_14', 'lag_30',
+                'roll_mean_7', 'roll_std_7', 'roll_mean_14', 'roll_std_14',
+                'roll_mean_30', 'roll_std_30',
+            ]
+
+            results = []
             for cat, group in df_cat.groupby('category_id'):
-                if len(group) < 2:
+                if len(group) < 5:
                     continue
-                # Forecast revenue at category level
-                model = Prophet(daily_seasonality=False, yearly_seasonality=True, weekly_seasonality=True)
-                model.fit(group[['ds', 'y']].sort_values('ds'))
-                future = model.make_future_dataframe(periods=horizon)
-                forecast = model.predict(future)
-                forecast = forecast[forecast['ds'] > global_max_date].head(horizon)
-                # Revenue-per-unit for this category
+
+                featured = build_features(group)
+                # Drop rows where lag features are NaN (initial rows)
+                train = featured.dropna(subset=['lag_1']).copy()
+                if len(train) < 3:
+                    continue
+
+                X_train = train[FEATURE_COLS].values
+                y_train = train['y'].values
+
+                model = XGBRegressor(
+                    n_estimators=200,
+                    max_depth=4,
+                    learning_rate=0.1,
+                    subsample=0.8,
+                    colsample_bytree=0.8,
+                    objective='reg:squarederror',
+                    verbosity=0,
+                )
+                model.fit(X_train, y_train)
+
+                # Iterative forecasting: predict one day at a time, feed back into features
+                last_known = featured.copy()
+                predictions = []
+                for step in range(horizon):
+                    next_date = global_max_date + pd.Timedelta(days=step + 1)
+                    new_row = pd.DataFrame({'ds': [next_date], 'y': [np.nan], 'units_sold': [0]})
+                    last_known = pd.concat([last_known, new_row], ignore_index=True)
+                    last_known = build_features(last_known[['ds', 'y', 'units_sold']])
+                    row_feat = last_known.iloc[-1:]
+                    X_pred = row_feat[FEATURE_COLS].fillna(0).values
+                    pred = float(model.predict(X_pred)[0])
+                    pred = max(0, pred)
+                    # Write prediction back so next step can use it as lag
+                    last_known.loc[last_known.index[-1], 'y'] = pred
+                    predictions.append((next_date, pred))
+
+                # Revenue-per-unit for unit estimation
                 cat_rev = group['y'].sum()
                 cat_units = group['units_sold'].sum()
                 rev_per_unit = cat_rev / cat_units if cat_units > 0 else 1.0
-                # Distribute forecast across locations by their historical share
+
+                # Distribute forecast across locations by historical share
                 cat_locs = loc_shares[loc_shares['category_id'] == cat]
-                for _, frow in forecast.iterrows():
+                for fdate, fpred in predictions:
                     for _, lrow in cat_locs.iterrows():
-                        amt = max(0, round(frow['yhat'] * lrow['share'], 2))
+                        amt = max(0, round(fpred * lrow['share'], 2))
                         units = max(0, round(amt / rev_per_unit))
-                        results.append({'transaction_date': str(frow['ds'].date()), 'category_id': int(cat), 'location_id': int(lrow['location_id']), 'amount': amt, 'units_sold': int(units)})
+                        results.append({
+                            'transaction_date': str(fdate.date()),
+                            'category_id': int(cat),
+                            'location_id': int(lrow['location_id']),
+                            'amount': amt,
+                            'units_sold': int(units),
+                        })
+
             out_buf = io.StringIO()
             pd.DataFrame(results).to_csv(out_buf, index=False)
             encoded = base64.b64encode(out_buf.getvalue().encode()).decode()
             with open('/tmp/forecast-b64.txt', 'w') as f:
                 f.write(encoded)
-            print(f'Forecast complete: {len(results)} rows')
+            print(f'XGBoost forecast complete: {len(results)} rows')
             PYEOF
             HORIZON="{{workflow.parameters.forecast-horizon-days}}" ACTUALS_B64="{{inputs.parameters.actuals-b64}}" python /tmp/run_forecast.py
 

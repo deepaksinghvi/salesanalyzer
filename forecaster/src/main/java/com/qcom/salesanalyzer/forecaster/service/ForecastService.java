@@ -31,10 +31,14 @@ public class ForecastService {
         return applicationContext.getBean(ForecastService.class);
     }
 
-    public String triggerArgoForecast(String tenantId) {
-        log.info("Triggering Argo forecast workflow for tenant {}", tenantId);
+    public String triggerArgoForecast(String tenantId, String algorithm) {
+        String algo = (algorithm != null && !algorithm.isBlank()) ? algorithm : "prophet";
+        log.info("Triggering Argo forecast workflow for tenant {} using algorithm={}", tenantId, algo);
         try {
-            return argoWorkflowService.submitForecastWorkflow(tenantId);
+            String workflowName = argoWorkflowService.submitForecastWorkflow(tenantId, algo);
+            log.info("Argo workflow '{}' submitted for tenant {} (algorithm={}) — it will write forecast data and refresh the MV on completion",
+                    workflowName, tenantId, algo);
+            return workflowName;
         } catch (Exception e) {
             log.error("Argo workflow submission failed: {}", e.getMessage(), e);
             log.info("Falling back to local linear forecast for tenant {}", tenantId);
@@ -51,45 +55,73 @@ public class ForecastService {
             return "NO_DATA";
         }
 
-        // Remove old forecasts
-        factSalesDailyRepository.deleteByTenantIdAndIsForecastTrue(tenantUuid);
+        // Remove only future forecast rows (preserve historical forecasts for months that now have actuals)
+        factSalesDailyRepository.deleteFutureForecastsByTenant(tenantUuid);
 
-        // Group by category + location, compute simple moving average for next 30 days
+        // Determine the latest actual month — forecast the next single month only
+        LocalDate latestActual = actuals.stream()
+                .map(FactSalesDaily::getTransactionDate)
+                .max(LocalDate::compareTo)
+                .orElse(LocalDate.now());
+        LocalDate forecastFromMonth = latestActual.withDayOfMonth(1).plusMonths(1);
+
+        int forecastMonths = 1;
+
+        // Group by category + location
         Map<String, List<FactSalesDaily>> grouped = actuals.stream().collect(
                 Collectors.groupingBy(f -> f.getCategoryId() + "_" + f.getLocationId()));
 
         List<FactSalesDaily> forecasts = new ArrayList<>();
-        LocalDate forecastStart = LocalDate.now().plusDays(1);
 
         grouped.forEach((key, rows) -> {
             int categoryId = rows.get(0).getCategoryId();
             int locationId = rows.get(0).getLocationId();
-            int windowSize = Math.min(30, rows.size());
-            List<FactSalesDaily> window = rows.subList(rows.size() - windowSize, rows.size());
 
-            BigDecimal avgAmount = window.stream()
-                    .map(FactSalesDaily::getAmount)
+            // Compute monthly totals from actuals for this category+location
+            Map<LocalDate, BigDecimal> monthlyAmounts = rows.stream().collect(
+                    Collectors.groupingBy(
+                            f -> f.getTransactionDate().withDayOfMonth(1),
+                            Collectors.reducing(BigDecimal.ZERO, FactSalesDaily::getAmount, BigDecimal::add)));
+            Map<LocalDate, Integer> monthlyUnits = rows.stream().collect(
+                    Collectors.groupingBy(
+                            f -> f.getTransactionDate().withDayOfMonth(1),
+                            Collectors.summingInt(FactSalesDaily::getUnitsSold)));
+
+            // Average monthly revenue and units across all actual months
+            int actualMonthCount = monthlyAmounts.size();
+            BigDecimal avgMonthlyAmount = monthlyAmounts.values().stream()
                     .reduce(BigDecimal.ZERO, BigDecimal::add)
-                    .divide(BigDecimal.valueOf(windowSize), 2, RoundingMode.HALF_UP);
+                    .divide(BigDecimal.valueOf(actualMonthCount), 2, RoundingMode.HALF_UP);
+            double avgMonthlyUnits = monthlyUnits.values().stream()
+                    .mapToInt(Integer::intValue).average().orElse(0);
 
-            double avgUnits = window.stream().mapToInt(FactSalesDaily::getUnitsSold).average().orElse(0);
+            // Insert one row per day in each forecast month so the MV aggregates correctly
+            for (int m = 0; m < forecastMonths; m++) {
+                LocalDate monthStart = forecastFromMonth.plusMonths(m);
+                int daysInMonth = monthStart.lengthOfMonth();
+                // Distribute monthly total evenly across days of the month
+                BigDecimal dailyAmount = avgMonthlyAmount.divide(
+                        BigDecimal.valueOf(daysInMonth), 2, RoundingMode.HALF_UP);
+                int dailyUnits = (int) Math.round(avgMonthlyUnits / daysInMonth);
 
-            for (int i = 0; i < 30; i++) {
-                forecasts.add(FactSalesDaily.builder()
-                        .transactionDate(forecastStart.plusDays(i))
-                        .tenantId(tenantUuid)
-                        .categoryId(categoryId)
-                        .locationId(locationId)
-                        .amount(avgAmount)
-                        .unitsSold((int) avgUnits)
-                        .isForecast(true)
-                        .build());
+                for (int d = 0; d < daysInMonth; d++) {
+                    forecasts.add(FactSalesDaily.builder()
+                            .transactionDate(monthStart.plusDays(d))
+                            .tenantId(tenantUuid)
+                            .categoryId(categoryId)
+                            .locationId(locationId)
+                            .amount(dailyAmount)
+                            .unitsSold(dailyUnits)
+                            .isForecast(true)
+                            .build());
+                }
             }
         });
 
         factSalesDailyRepository.saveAll(forecasts);
-        log.info("Local forecast complete: {} rows inserted for tenant {}", forecasts.size(), tenantId);
-        return "LOCAL_FORECAST_COMPLETE";
+        log.info("Local forecast complete: {} rows for next month ({}) for tenant {}",
+                forecasts.size(), forecastFromMonth, tenantId);
+        return "LOCAL_FORECAST_COMPLETE:1_MONTH";
     }
 
     @Transactional

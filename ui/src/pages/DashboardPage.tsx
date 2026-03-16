@@ -6,7 +6,7 @@ import { triggerForecast, clearForecast } from '../api/forecast';
 import type { SalesInsight } from '../types';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  ResponsiveContainer, LineChart, Line
+  ResponsiveContainer, LineChart, Line, ReferenceLine
 } from 'recharts';
 import { TrendingUp, DollarSign, ShoppingCart, Award, Play, Trash2 } from 'lucide-react';
 import Layout from '../components/Layout';
@@ -63,7 +63,19 @@ export default function DashboardPage() {
     enabled: !!user?.tenantId,
   });
 
-  const invalidate = () => qc.invalidateQueries({ queryKey: ['insights', user?.tenantId] });
+  const { data: allInsights = [] } = useQuery<SalesInsight[]>({
+    queryKey: ['insights-all', user?.tenantId],
+    queryFn: async () => {
+      const res = await apiClient.get(`/api/insights/${user?.tenantId}?period=all`);
+      return res.data;
+    },
+    enabled: !!user?.tenantId,
+  });
+
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ['insights', user?.tenantId] });
+    qc.invalidateQueries({ queryKey: ['insights-all', user?.tenantId] });
+  };
 
   const runForecastMutation = useMutation({
     mutationFn: () => triggerForecast(user!.tenantId),
@@ -83,24 +95,78 @@ export default function DashboardPage() {
     onError: () => setForecastMsg({ text: 'Failed to clear forecast data.', ok: false }),
   });
 
-  const totalActual = insights.reduce((s, i) => s + (i.actualRevenue || 0), 0);
-  const totalPredicted = insights.reduce((s, i) => s + (i.predictedRevenue || 0), 0);
-  const totalUnits = insights.reduce((s, i) => s + (i.totalUnits || 0), 0);
-  const topCategory = insights.find((i) => i.categoryRank === 1)?.categoryName ?? '—';
+  // Actual revenue = sum of actual months only (months that have real sales data)
+  const totalActual = insights
+    .filter((i) => (i.actualRevenue || 0) > 0)
+    .reduce((s, i) => s + i.actualRevenue, 0);
 
-  const chartData = insights.slice(0, 10).map((i) => ({
-    name: i.categoryName,
-    Actual: i.actualRevenue,
-    Forecast: i.predictedRevenue,
-  }));
+  // Predicted revenue = sum of forecast-only months (future months with no actuals yet)
+  const totalPredicted = insights
+    .filter((i) => (i.actualRevenue || 0) === 0 && (i.predictedRevenue || 0) > 0)
+    .reduce((s, i) => s + i.predictedRevenue, 0);
 
-  const trendData = Array.from(
-    new Map(insights.map((i) => [i.periodMonth?.slice(0, 7), i])).values()
-  ).map((i) => ({
-    month: i.periodMonth?.slice(0, 7),
-    Actual: i.actualRevenue,
-    Forecast: i.predictedRevenue,
-  }));
+  // Units from actual months only
+  const totalUnits = insights
+    .filter((i) => (i.actualRevenue || 0) > 0)
+    .reduce((s, i) => s + (i.totalUnits || 0), 0);
+
+  // Top category from actual months
+  const topCategory = insights
+    .filter((i) => (i.actualRevenue || 0) > 0)
+    .find((i) => i.categoryRank === 1)?.categoryName ?? '—';
+
+  // Category chart: show actual period rows only (current period actuals, not future forecast months)
+  const chartData = insights
+    .filter((i) => (i.actualRevenue || 0) > 0)
+    .slice(0, 10)
+    .map((i) => ({
+      name: i.categoryName,
+      Actual: i.actualRevenue,
+      Forecast: i.predictedRevenue,
+    }));
+
+  const trendData = (() => {
+    const byMonth = new Map<string, { actual: number; forecast: number }>();
+    for (const i of insights) {
+      const m = i.periodMonth?.slice(0, 7) ?? '';
+      if (!m) continue;
+      const existing = byMonth.get(m) ?? { actual: 0, forecast: 0 };
+      existing.actual += i.actualRevenue || 0;
+      existing.forecast += i.predictedRevenue || 0;
+      byMonth.set(m, existing);
+    }
+    return Array.from(byMonth.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([month, { actual, forecast }]) => ({
+        month,
+        Actual: actual > 0 ? actual : null,
+        Forecast: forecast > 0 ? forecast : null,
+      }));
+  })();
+
+  // Full timeline: aggregate all months across categories, sorted ascending
+  const fullTrendData = (() => {
+    const byMonth = new Map<string, { actual: number; forecast: number }>();
+    for (const i of allInsights) {
+      const m = i.periodMonth?.slice(0, 7) ?? '';
+      if (!m) continue;
+      const existing = byMonth.get(m) ?? { actual: 0, forecast: 0 };
+      existing.actual += i.actualRevenue || 0;
+      existing.forecast += i.predictedRevenue || 0;
+      byMonth.set(m, existing);
+    }
+    return Array.from(byMonth.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([month, { actual, forecast }]) => ({
+        month,
+        Actual: actual > 0 ? actual : null,
+        Forecast: forecast > 0 ? forecast : null,
+        isForecastOnly: actual === 0 && forecast > 0,
+      }));
+  })();
+
+  // First forecast-only month = boundary marker
+  const forecastStartMonth = fullTrendData.find((d) => d.isForecastOnly)?.month ?? null;
 
   return (
     <Layout>
@@ -165,8 +231,8 @@ export default function DashboardPage() {
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <StatCard title="Total Actual Revenue" value={fmt(totalActual)} icon={DollarSign} color="bg-blue-600" />
-              <StatCard title="Predicted Revenue" value={fmt(totalPredicted)} icon={TrendingUp} color="bg-emerald-500" />
+              <StatCard title="Actual Revenue" value={fmt(totalActual)} icon={DollarSign} color="bg-blue-600" />
+              <StatCard title="Forecasted Revenue (Next)" value={fmt(totalPredicted)} icon={TrendingUp} color="bg-emerald-500" />
               <StatCard title="Units Sold" value={totalUnits.toLocaleString()} icon={ShoppingCart} color="bg-violet-500" />
               <StatCard title="Top Category" value={topCategory} icon={Award} color="bg-amber-500" />
             </div>
@@ -188,7 +254,7 @@ export default function DashboardPage() {
               </div>
 
               <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                <h2 className="text-base font-semibold text-gray-900 mb-4">Revenue Trend</h2>
+                <h2 className="text-base font-semibold text-gray-900 mb-4">Revenue Trend ({periodLabel(period)})</h2>
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={trendData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -202,6 +268,71 @@ export default function DashboardPage() {
                 </ResponsiveContainer>
               </div>
             </div>
+
+            {/* Full actuals + forecast overlay chart */}
+            {fullTrendData.length > 0 && (
+              <div className="mt-6 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center justify-between mb-1">
+                  <h2 className="text-base font-semibold text-gray-900">Full Revenue Timeline — Actuals &amp; Forecast</h2>
+                  {forecastStartMonth && (
+                    <span className="text-xs text-emerald-600 font-medium bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-full">
+                      Forecast from {forecastStartMonth}
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-gray-400 mb-4">
+                  Solid line = actual sales &nbsp;·&nbsp; Dashed line = forecasted revenue
+                </p>
+                <ResponsiveContainer width="100%" height={320}>
+                  <LineChart data={fullTrendData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+                    <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => fmt(v)} width={70} />
+                    <Tooltip
+                      content={(props: any) => {
+                        if (!props.active || !props.payload?.length) return null;
+                        return (
+                          <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 text-sm">
+                            <p className="font-semibold text-gray-700 mb-1">{props.label}</p>
+                            {props.payload.map((p: any) => (
+                              <p key={p.name} style={{ color: p.color }}>
+                                {p.name}: {fmt(Number(p.value))}
+                              </p>
+                            ))}
+                          </div>
+                        );
+                      }}
+                    />
+                    <Legend />
+                    {forecastStartMonth && (
+                      <ReferenceLine
+                        x={forecastStartMonth}
+                        stroke="#f59e0b"
+                        strokeDasharray="4 4"
+                        label={{ value: 'Forecast start', position: 'insideTopRight', fontSize: 11, fill: '#f59e0b' }}
+                      />
+                    )}
+                    <Line
+                      type="monotone"
+                      dataKey="Actual"
+                      stroke="#3b82f6"
+                      strokeWidth={2.5}
+                      dot={{ r: 3 }}
+                      connectNulls={false}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="Forecast"
+                      stroke="#10b981"
+                      strokeWidth={2.5}
+                      strokeDasharray="6 3"
+                      dot={{ r: 3 }}
+                      connectNulls={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
 
             {insights.length === 0 && (
               <div className="mt-12 text-center text-gray-400">

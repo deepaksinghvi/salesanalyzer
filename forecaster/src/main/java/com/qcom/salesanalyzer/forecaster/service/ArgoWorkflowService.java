@@ -28,8 +28,11 @@ public class ArgoWorkflowService {
     @Value("${app.argo.namespace}")
     private String namespace;
 
-    @Value("${app.argo.workflow-template}")
-    private String workflowTemplate;
+    @Value("${app.argo.workflow-template.prophet}")
+    private String prophetTemplate;
+
+    @Value("${app.argo.workflow-template.xgboost}")
+    private String xgboostTemplate;
 
     @Value("${app.argo.service-account}")
     private String serviceAccount;
@@ -54,8 +57,8 @@ public class ArgoWorkflowService {
     }
     private final ObjectMapper jsonMapper = new ObjectMapper();
 
-    public String submitForecastWorkflow(String tenantId) throws Exception {
-        Map<String, Object> workflow = buildWorkflowPayload(tenantId);
+    public String submitForecastWorkflow(String tenantId, String algorithm) throws Exception {
+        Map<String, Object> workflow = buildWorkflowPayload(tenantId, algorithm);
         Map<String, Object> body = Map.of("workflow", workflow);
         String json = jsonMapper.writeValueAsString(body);
 
@@ -77,9 +80,12 @@ public class ArgoWorkflowService {
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> buildWorkflowPayload(String tenantId) {
+    private Map<String, Object> buildWorkflowPayload(String tenantId, String algorithm) {
+        String templateName = "xgboost".equalsIgnoreCase(algorithm) ? xgboostTemplate : prophetTemplate;
+        String prefix = "xgboost".equalsIgnoreCase(algorithm) ? "xgb-forecast-" : "sales-forecast-";
+
         Map<String, Object> metadata = new HashMap<>();
-        metadata.put("generateName", "sales-forecast-" + tenantId.substring(0, 8) + "-");
+        metadata.put("generateName", prefix + tenantId.substring(0, 8) + "-");
         metadata.put("namespace", namespace);
 
         Map<String, Object> argument = new HashMap<>();
@@ -90,7 +96,7 @@ public class ArgoWorkflowService {
         arguments.put("parameters", List.of(argument));
 
         Map<String, Object> spec = new HashMap<>();
-        spec.put("workflowTemplateRef", Map.of("name", workflowTemplate));
+        spec.put("workflowTemplateRef", Map.of("name", templateName));
         spec.put("arguments", arguments);
         spec.put("serviceAccountName", serviceAccount);
 

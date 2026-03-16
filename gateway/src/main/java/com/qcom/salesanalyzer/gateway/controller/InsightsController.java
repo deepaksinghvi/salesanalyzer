@@ -24,6 +24,11 @@ public class InsightsController {
             @PathVariable UUID tenantId,
             @RequestParam(defaultValue = "month") String period) {
 
+        if ("all".equalsIgnoreCase(period)) {
+            return ResponseEntity.ok(
+                    insightRepository.findByTenantIdOrderByPeriodMonthDescCategoryRankAsc(tenantId));
+        }
+
         OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
         // Subtract 1 day to account for timezone offset (e.g. IST UTC+5:30 causes
         // DATE_TRUNC('month', ...) to be stored as last day of prior month at 18:30 UTC)

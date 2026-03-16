@@ -18,6 +18,18 @@ public interface FactSalesDailyRepository extends JpaRepository<FactSalesDaily, 
 
     void deleteByTenantIdAndIsForecastTrue(UUID tenantId);
 
+    @Modifying
+    @Query(value = "DELETE FROM fact_sales_daily f "
+            + "WHERE f.tenant_id = :tenantId AND f.is_forecast = true "
+            + "AND DATE_TRUNC('month', f.transaction_date) NOT IN ("
+            + "  SELECT DISTINCT DATE_TRUNC('month', a.transaction_date) "
+            + "  FROM fact_sales_daily a "
+            + "  WHERE a.tenant_id = :tenantId AND a.is_forecast = false"
+            + ")", nativeQuery = true)
+    void deleteFutureForecastsByTenant(UUID tenantId);
+
+    long countByTenantIdAndIsForecastTrue(UUID tenantId);
+
     List<FactSalesDaily> findByTenantIdAndTransactionDateAfterAndIsForecastTrue(UUID tenantId, LocalDate date);
 
     @Modifying

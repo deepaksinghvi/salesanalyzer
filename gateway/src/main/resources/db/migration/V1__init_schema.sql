@@ -89,20 +89,30 @@ CREATE TABLE upload_jobs (
 
 CREATE MATERIALIZED VIEW mv_final_sales_insights AS
 SELECT
-    fsd.tenant_id,
-    DATE_TRUNC('month', fsd.transaction_date)   AS period_month,
-    fsd.category_id,
-    dc.name                                      AS category_name,
-    SUM(CASE WHEN fsd.is_forecast = FALSE THEN fsd.amount ELSE 0 END) AS actual_revenue,
-    SUM(CASE WHEN fsd.is_forecast = TRUE  THEN fsd.amount ELSE 0 END) AS predicted_revenue,
-    SUM(fsd.units_sold)                          AS total_units,
+    tenant_id,
+    period_month,
+    category_id,
+    category_name,
+    actual_revenue,
+    predicted_revenue,
+    total_units,
     RANK() OVER (
-        PARTITION BY fsd.tenant_id, DATE_TRUNC('month', fsd.transaction_date)
-        ORDER BY SUM(fsd.amount) DESC
+        PARTITION BY tenant_id, period_month
+        ORDER BY (actual_revenue + predicted_revenue) DESC
     ) AS category_rank
-FROM fact_sales_daily fsd
-JOIN dim_categories dc ON fsd.category_id = dc.category_id
-GROUP BY 1, 2, 3, 4;
+FROM (
+    SELECT
+        fsd.tenant_id,
+        DATE_TRUNC('month', fsd.transaction_date::timestamp)::timestamptz AS period_month,
+        fsd.category_id,
+        dc.name                                      AS category_name,
+        SUM(CASE WHEN fsd.is_forecast = FALSE THEN fsd.amount ELSE 0 END) AS actual_revenue,
+        SUM(CASE WHEN fsd.is_forecast = TRUE  THEN fsd.amount ELSE 0 END) AS predicted_revenue,
+        SUM(fsd.units_sold)                          AS total_units
+    FROM fact_sales_daily fsd
+    JOIN dim_categories dc ON fsd.category_id = dc.category_id
+    GROUP BY fsd.tenant_id, DATE_TRUNC('month', fsd.transaction_date::timestamp), fsd.category_id, dc.name
+) sub;
 
 CREATE UNIQUE INDEX idx_mv_final_sales_insights ON mv_final_sales_insights(tenant_id, period_month, category_id);
 

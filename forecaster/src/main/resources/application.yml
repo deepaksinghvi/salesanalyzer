@@ -21,7 +21,9 @@ app:
   argo:
     server-url: https://localhost:2746
     namespace: argo
-    workflow-template: sales-forecast-workflow
+    workflow-template:
+      prophet: sales-forecast-workflow
+      xgboost: sales-forecast-xgboost-workflow
     service-account: argo-workflow-sa
 
 springdoc:
