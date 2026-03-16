@@ -1,0 +1,42 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: orchestrator
+  datasource:
+    url: jdbc:postgresql://localhost:5432/salesanalyzer
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: false
+
+temporal:
+  connection:
+    target: localhost:7233
+  namespace: default
+  workers:
+    - name: sales-upload-worker
+      task-queue: SALES_UPLOAD_TASK_QUEUE
+    - name: sales-refresh-worker
+      task-queue: SALES_REFRESH_TASK_QUEUE
+    - name: forecast-trigger-worker
+      task-queue: FORECAST_TRIGGER_TASK_QUEUE
+
+app:
+  forecaster:
+    base-url: http://localhost:8082
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

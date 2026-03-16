@@ -1,0 +1,123 @@
+tenant_id,transaction_date,category_name,city,region,total_revenue,units_sold
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-01,Electronics,San Francisco,CA,4520.50,14
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-01,Clothing,New York,NY,1230.00,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-01,Home & Garden,Chicago,IL,890.75,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-01,Sports,Austin,TX,2100.00,11
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-02,Electronics,San Francisco,CA,3980.00,12
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-02,Clothing,New York,NY,1450.50,10
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-02,Home & Garden,Chicago,IL,760.00,5
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-02,Sports,Austin,TX,1870.25,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-03,Electronics,Los Angeles,CA,5100.00,16
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-03,Clothing,New York,NY,980.00,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-03,Home & Garden,Chicago,IL,1100.50,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-03,Sports,Austin,TX,2340.00,13
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-04,Electronics,San Francisco,CA,4750.00,15
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-04,Clothing,Los Angeles,CA,1320.00,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-04,Home & Garden,Chicago,IL,830.00,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-04,Sports,Dallas,TX,1990.75,10
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-05,Electronics,New York,NY,6200.00,19
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-05,Clothing,New York,NY,1560.00,11
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-05,Home & Garden,Seattle,WA,940.50,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-05,Sports,Austin,TX,2650.00,14
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-06,Electronics,San Francisco,CA,3400.25,10
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-06,Clothing,Chicago,IL,1100.00,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-06,Home & Garden,Chicago,IL,680.00,5
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-06,Sports,Dallas,TX,1750.00,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-07,Electronics,Los Angeles,CA,4900.00,15
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-07,Clothing,New York,NY,1380.50,10
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-07,Home & Garden,Seattle,WA,1020.00,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-07,Sports,Austin,TX,2200.00,12
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-08,Electronics,San Francisco,CA,5300.00,17
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-08,Clothing,Los Angeles,CA,1650.00,12
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-09,Electronics,New York,NY,4100.75,13
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-09,Clothing,Chicago,IL,1200.00,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-09,Home & Garden,Chicago,IL,950.00,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-09,Sports,Dallas,TX,2050.50,11
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-10,Electronics,San Francisco,CA,4680.00,14
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-10,Clothing,New York,NY,1430.00,10
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-10,Home & Garden,Seattle,WA,870.25,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-10,Sports,Austin,TX,2400.00,13
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-11,Electronics,Los Angeles,CA,5500.00,18
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-11,Clothing,New York,NY,1780.00,13
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-11,Home & Garden,Chicago,IL,1150.00,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-11,Sports,Dallas,TX,2300.75,12
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-12,Electronics,San Francisco,CA,4200.00,13
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-12,Clothing,Los Angeles,CA,1100.50,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-12,Home & Garden,Seattle,WA,780.00,5
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-12,Sports,Austin,TX,1900.00,10
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-13,Electronics,New York,NY,5800.25,18
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-13,Clothing,New York,NY,1650.00,12
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-13,Home & Garden,Chicago,IL,1000.00,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-13,Sports,Dallas,TX,2500.00,14
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-14,Electronics,San Francisco,CA,4400.00,14
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-14,Clothing,Chicago,IL,1300.75,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-14,Home & Garden,Seattle,WA,920.00,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-14,Sports,Austin,TX,2150.50,11
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-15,Electronics,Los Angeles,CA,5050.00,16
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-15,Clothing,New York,NY,1500.00,11
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-15,Home & Garden,Chicago,IL,860.25,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-15,Sports,Dallas,TX,2250.00,12
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-16,Electronics,San Francisco,CA,4850.75,15
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-16,Clothing,Los Angeles,CA,1420.00,10
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-16,Home & Garden,Seattle,WA,990.00,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-16,Sports,Austin,TX,2600.00,14
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-17,Electronics,New York,NY,6100.00,19
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-17,Clothing,New York,NY,1700.50,12
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-17,Home & Garden,Chicago,IL,1080.00,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-17,Sports,Dallas,TX,2450.25,13
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-18,Electronics,San Francisco,CA,3750.00,12
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-18,Clothing,Chicago,IL,1050.00,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-18,Home & Garden,Seattle,WA,720.50,5
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-18,Sports,Austin,TX,1800.00,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-19,Electronics,Los Angeles,CA,5250.00,17
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-19,Clothing,New York,NY,1580.00,11
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-19,Home & Garden,Chicago,IL,930.75,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-19,Sports,Dallas,TX,2350.00,13
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-20,Electronics,San Francisco,CA,4950.00,16
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-20,Clothing,Los Angeles,CA,1360.25,10
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-20,Home & Garden,Seattle,WA,1010.00,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-20,Sports,Austin,TX,2700.50,15
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-21,Electronics,New York,NY,5650.00,18
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-21,Clothing,New York,NY,1840.00,13
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-21,Home & Garden,Chicago,IL,1200.25,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-21,Sports,Dallas,TX,2550.00,14
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-22,Electronics,San Francisco,CA,4300.50,13
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-22,Clothing,Chicago,IL,1180.00,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-22,Home & Garden,Seattle,WA,840.00,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-22,Sports,Austin,TX,2000.75,11
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-23,Electronics,Los Angeles,CA,5400.00,17
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-23,Clothing,New York,NY,1620.50,12
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-23,Home & Garden,Chicago,IL,970.00,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-23,Sports,Dallas,TX,2420.00,13
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-24,Electronics,San Francisco,CA,5000.25,16
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-24,Clothing,Los Angeles,CA,1480.00,11
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-24,Home & Garden,Seattle,WA,1060.50,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-24,Sports,Austin,TX,2800.00,16
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-25,Electronics,New York,NY,5900.00,19
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-25,Clothing,New York,NY,1760.25,13
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-25,Home & Garden,Chicago,IL,1130.00,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-25,Sports,Dallas,TX,2600.50,14
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-26,Electronics,San Francisco,CA,4600.00,14
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-26,Clothing,Chicago,IL,1250.75,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-26,Home & Garden,Seattle,WA,900.00,6
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-26,Sports,Austin,TX,2100.25,11
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-27,Electronics,Los Angeles,CA,5150.00,16
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-27,Clothing,New York,NY,1540.00,11
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-27,Home & Garden,Chicago,IL,1040.50,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-27,Sports,Dallas,TX,2480.00,13
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-28,Electronics,San Francisco,CA,4750.75,15
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-28,Clothing,Los Angeles,CA,1390.00,10
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-28,Home & Garden,Seattle,WA,980.25,7
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-28,Sports,Austin,TX,2720.00,15
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-29,Electronics,New York,NY,6050.00,19
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-29,Clothing,New York,NY,1820.50,13
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-29,Home & Garden,Chicago,IL,1170.00,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-29,Sports,Dallas,TX,2580.25,14
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-30,Electronics,San Francisco,CA,5200.00,17
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-30,Clothing,Chicago,IL,1460.00,11
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-30,Home & Garden,Seattle,WA,1090.75,8
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-30,Sports,Austin,TX,2850.00,16
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-31,Electronics,Los Angeles,CA,5700.50,18
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-31,Clothing,New York,NY,1900.00,14
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-31,Home & Garden,Chicago,IL,1250.00,9
+e883201e-276b-44ce-bc0f-7c9c365ca301,2026-03-31,Sports,Dallas,TX,2950.75,16

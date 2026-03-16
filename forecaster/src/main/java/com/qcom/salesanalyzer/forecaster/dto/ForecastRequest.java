@@ -1,0 +1,8 @@
+package com.qcom.salesanalyzer.forecaster.dto;
+
+import lombok.Data;
+
+@Data
+public class ForecastRequest {
+    private String tenantId;
+}

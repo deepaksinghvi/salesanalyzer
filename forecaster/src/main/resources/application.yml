@@ -1,0 +1,31 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: forecaster
+  datasource:
+    url: jdbc:postgresql://localhost:5432/salesanalyzer
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+app:
+  argo:
+    server-url: https://localhost:2746
+    namespace: argo
+    workflow-template: sales-forecast-workflow
+    service-account: argo-workflow-sa
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

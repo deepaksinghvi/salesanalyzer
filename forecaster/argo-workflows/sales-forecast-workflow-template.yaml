@@ -1,0 +1,186 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: sales-forecast-workflow
+  namespace: argo
+spec:
+  entrypoint: forecast-pipeline
+  serviceAccountName: argo-workflow-sa
+  arguments:
+    parameters:
+      - name: tenant-id
+        value: ""
+      - name: db-url
+        value: "postgresql://postgres:postgres@192.168.65.254:5432/salesanalyzer"
+      - name: forecast-horizon-days
+        value: "30"
+
+  templates:
+    - name: forecast-pipeline
+      dag:
+        tasks:
+          - name: extract-actuals
+            template: extract-data
+            arguments:
+              parameters:
+                - name: tenant-id
+                  value: "{{workflow.parameters.tenant-id}}"
+          - name: run-forecast
+            template: run-prophet-forecast
+            dependencies: [extract-actuals]
+            arguments:
+              parameters:
+                - name: tenant-id
+                  value: "{{workflow.parameters.tenant-id}}"
+                - name: actuals-b64
+                  value: "{{tasks.extract-actuals.outputs.parameters.actuals-b64}}"
+          - name: write-results
+            template: write-forecast-results
+            dependencies: [run-forecast]
+            arguments:
+              parameters:
+                - name: tenant-id
+                  value: "{{workflow.parameters.tenant-id}}"
+                - name: forecast-b64
+                  value: "{{tasks.run-forecast.outputs.parameters.forecast-b64}}"
+          - name: refresh-mv
+            template: refresh-materialized-view
+            dependencies: [write-results]
+
+    - name: extract-data
+      inputs:
+        parameters:
+          - name: tenant-id
+      outputs:
+        parameters:
+          - name: actuals-b64
+            valueFrom:
+              path: /tmp/actuals-b64.txt
+      container:
+        image: python:3.11-slim
+        command: [sh, -c]
+        args:
+          - |
+            pip install -q psycopg2-binary
+            cat > /tmp/extract.py << 'PYEOF'
+            import psycopg2, csv, os, base64, io
+            tenant_id = os.environ['TENANT_ID']
+            db_url = os.environ['DB_URL']
+            conn = psycopg2.connect(db_url)
+            cursor = conn.cursor()
+            cursor.execute(
+                'SELECT transaction_date, category_id, location_id, amount, units_sold '
+                'FROM fact_sales_daily '
+                'WHERE tenant_id = %s AND is_forecast = false '
+                'ORDER BY transaction_date ASC',
+                (tenant_id,)
+            )
+            buf = io.StringIO()
+            writer = csv.writer(buf)
+            writer.writerow(['ds', 'category_id', 'location_id', 'y', 'units_sold'])
+            for row in cursor.fetchall():
+                writer.writerow(row)
+            conn.close()
+            encoded = base64.b64encode(buf.getvalue().encode()).decode()
+            with open('/tmp/actuals-b64.txt', 'w') as f:
+                f.write(encoded)
+            print(f'Extracted and encoded actuals')
+            PYEOF
+            TENANT_ID="{{inputs.parameters.tenant-id}}" python /tmp/extract.py
+        env:
+          - name: DB_URL
+            value: "{{workflow.parameters.db-url}}"
+
+    - name: run-prophet-forecast
+      inputs:
+        parameters:
+          - name: tenant-id
+          - name: actuals-b64
+      outputs:
+        parameters:
+          - name: forecast-b64
+            valueFrom:
+              path: /tmp/forecast-b64.txt
+      container:
+        image: python:3.11-slim
+        command: [sh, -c]
+        args:
+          - |
+            pip install -q prophet pandas
+            cat > /tmp/run_forecast.py << 'PYEOF'
+            import pandas as pd, base64, io, os
+            from prophet import Prophet
+            horizon = int(os.environ['HORIZON'])
+            actuals_b64 = os.environ['ACTUALS_B64']
+            csv_data = base64.b64decode(actuals_b64.encode()).decode()
+            df = pd.read_csv(io.StringIO(csv_data))
+            df['ds'] = pd.to_datetime(df['ds'])
+            results = []
+            for (cat, loc), group in df.groupby(['category_id', 'location_id']):
+                if len(group) < 2:
+                    continue
+                model = Prophet(daily_seasonality=True, yearly_seasonality=True)
+                model.fit(group[['ds', 'y']])
+                future = model.make_future_dataframe(periods=horizon)
+                forecast = model.predict(future).tail(horizon)
+                for _, row in forecast.iterrows():
+                    results.append({'transaction_date': str(row['ds'].date()), 'category_id': cat, 'location_id': loc, 'amount': max(0, round(row['yhat'], 2)), 'units_sold': 0})
+            out_buf = io.StringIO()
+            pd.DataFrame(results).to_csv(out_buf, index=False)
+            encoded = base64.b64encode(out_buf.getvalue().encode()).decode()
+            with open('/tmp/forecast-b64.txt', 'w') as f:
+                f.write(encoded)
+            print(f'Forecast complete: {len(results)} rows')
+            PYEOF
+            HORIZON="{{workflow.parameters.forecast-horizon-days}}" ACTUALS_B64="{{inputs.parameters.actuals-b64}}" python /tmp/run_forecast.py
+
+    - name: write-forecast-results
+      inputs:
+        parameters:
+          - name: tenant-id
+          - name: forecast-b64
+      container:
+        image: python:3.11-slim
+        command: [sh, -c]
+        args:
+          - |
+            pip install -q psycopg2-binary pandas
+            cat > /tmp/write.py << 'PYEOF'
+            import psycopg2, pandas as pd, base64, io, os
+            tenant_id = os.environ['TENANT_ID']
+            db_url = os.environ['DB_URL']
+            forecast_b64 = os.environ['FORECAST_B64']
+            csv_data = base64.b64decode(forecast_b64.encode()).decode()
+            df = pd.read_csv(io.StringIO(csv_data))
+            conn = psycopg2.connect(db_url)
+            cursor = conn.cursor()
+            cursor.execute('DELETE FROM fact_sales_daily WHERE tenant_id = %s AND is_forecast = true', (tenant_id,))
+            for _, row in df.iterrows():
+                cursor.execute('INSERT INTO fact_sales_daily (transaction_date, tenant_id, category_id, location_id, amount, units_sold, is_forecast) VALUES (%s, %s, %s, %s, %s, %s, true)', (row['transaction_date'], tenant_id, int(row['category_id']), int(row['location_id']), float(row['amount']), int(row['units_sold'])))
+            conn.commit()
+            conn.close()
+            print(f'Wrote {len(df)} forecast rows for tenant {tenant_id}')
+            PYEOF
+            TENANT_ID="{{inputs.parameters.tenant-id}}" FORECAST_B64="{{inputs.parameters.forecast-b64}}" python /tmp/write.py
+        env:
+          - name: DB_URL
+            value: "{{workflow.parameters.db-url}}"
+
+    - name: refresh-materialized-view
+      container:
+        image: python:3.11-slim
+        command: [sh, -c]
+        args:
+          - |
+            pip install -q psycopg2-binary
+            python -c "
+            import psycopg2, os
+            conn = psycopg2.connect(os.environ['DB_URL'])
+            conn.autocommit = True
+            conn.cursor().execute('REFRESH MATERIALIZED VIEW CONCURRENTLY mv_final_sales_insights')
+            conn.close()
+            print('Materialized view refreshed')
+            "
+        env:
+          - name: DB_URL
+            value: "{{workflow.parameters.db-url}}"
