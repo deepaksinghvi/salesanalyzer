@@ -24,6 +24,13 @@ app:
     workflow-template: sales-forecast-workflow
     service-account: argo-workflow-sa
 
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+
 management:
   endpoints:
     web:

@@ -76,6 +76,47 @@ mv_final_sales_insights → Materialized view: monthly actual vs forecast by cat
 
 ---
 
+## Development Script (`dev.sh`)
+
+A convenience script at the project root to build, start, stop, and clean all services.
+
+```bash
+# Start (stop + build + run) all services
+./dev.sh
+
+# Start only specific services
+./dev.sh gateway forecaster
+
+# Stop all services
+./dev.sh stop
+
+# Stop specific services
+./dev.sh stop gateway ui
+
+# mvn clean all Java services (useful before git commit)
+./dev.sh clean
+
+# mvn clean specific Java service(s)
+./dev.sh clean gateway forecaster
+```
+
+**Services:** `gateway`, `orchestrator`, `forecaster`, `ui`  
+**Logs:** written to `/tmp/sa-{service}.log` for each running service.
+
+---
+
+## API Documentation (Swagger UI)
+
+All three backend services expose Swagger UI when running locally. No authentication required.
+
+| Service | Swagger UI | OpenAPI JSON |
+|---|---|---|
+| Gateway | http://localhost:8080/swagger-ui.html | http://localhost:8080/api-docs |
+| Orchestrator | http://localhost:8081/swagger-ui.html | http://localhost:8081/api-docs |
+| Forecaster | http://localhost:8082/swagger-ui.html | http://localhost:8082/api-docs |
+
+---
+
 ## Local Development (without Docker)
 
 ### 1. Start PostgreSQL
@@ -105,7 +146,8 @@ cd gateway
 mvn spring-boot:run
 ```
 
-Flyway runs on startup and applies `V1__init_schema.sql` automatically.
+Flyway runs on startup and applies `V1__init_schema.sql` automatically.  
+Swagger UI: http://localhost:8080/swagger-ui.html
 
 ### 4. Run Orchestrator (port 8081)
 
@@ -114,12 +156,16 @@ cd orchestrator
 mvn spring-boot:run
 ```
 
+Swagger UI: http://localhost:8081/swagger-ui.html
+
 ### 5. Run Forecaster (port 8082)
 
 ```bash
 cd forecaster
 mvn spring-boot:run
 ```
+
+Swagger UI: http://localhost:8082/swagger-ui.html
 
 ### 6. Run UI (port 5173 in dev)
 
@@ -131,6 +177,8 @@ npm run dev
 
 Open: http://localhost:5173  
 Login: `superadmin@qcom.com` / `admin`
+
+> **Tip:** Use `./dev.sh` from the project root to start all services at once instead of running each manually.
 
 ---
 
@@ -226,10 +274,19 @@ If Argo is not available, the Forecaster service falls back to a **local linear 
 | POST | `/api/uploads` | `multipart: file, periodType` |
 
 ### Forecast
-| Method | Endpoint |
-|---|---|
-| POST | `/api/forecast/trigger` |
-| POST | `/api/forecast/run-local` |
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/forecast/trigger` | Trigger Argo workflow (falls back to local) |
+| POST | `/api/forecast/run-local` | Force local linear forecast |
+| DELETE | `/api/forecast/{tenantId}` | Clear all forecast rows for a tenant |
+
+> Full interactive API docs available at the [Swagger UIs](#api-documentation-swagger-ui) above.
+
+### Users (SuperAdmin)
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/users` | All users across all tenants |
+| PUT | `/api/users/{userId}/password` | Reset a user's password |
 
 ---
 
