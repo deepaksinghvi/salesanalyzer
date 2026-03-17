@@ -8,7 +8,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   ResponsiveContainer, LineChart, Line, ReferenceLine
 } from 'recharts';
-import { TrendingUp, DollarSign, ShoppingCart, Award, Play, Trash2 } from 'lucide-react';
+import { TrendingUp, DollarSign, ShoppingCart, Award, Play, Trash2, RefreshCw } from 'lucide-react';
 import Layout from '../components/Layout';
 
 function StatCard({ title, value, icon: Icon, color }: {
@@ -33,25 +33,27 @@ function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact' }).format(n);
 }
 
-type Period = 'month' | 'quarter' | 'year';
+type Period = 'month' | 'quarter' | 'year' | 'all';
 
 const PERIOD_LABELS: Record<Period, string> = {
   month: 'This Month',
   quarter: 'This Quarter',
   year: 'This Year',
+  all: 'All Time',
 };
 
 function periodLabel(period: Period): string {
   const now = new Date();
   if (period === 'month') return now.toLocaleString('default', { month: 'long', year: 'numeric' });
   if (period === 'quarter') return `Q${Math.ceil((now.getMonth() + 1) / 3)} ${now.getFullYear()}`;
+  if (period === 'all') return 'All Time';
   return `${now.getFullYear()}`;
 }
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const qc = useQueryClient();
-  const [period, setPeriod] = useState<Period>('month');
+  const [period, setPeriod] = useState<Period>('all');
   const [forecastMsg, setForecastMsg] = useState<{ text: string; ok: boolean } | null>(null);
 
   const { data: insights = [], isLoading } = useQuery<SalesInsight[]>({
@@ -115,20 +117,38 @@ export default function DashboardPage() {
     .filter((i) => (i.actualRevenue || 0) > 0)
     .find((i) => i.categoryRank === 1)?.categoryName ?? '—';
 
-  // Category chart: show actual period rows only (current period actuals, not future forecast months)
-  const chartData = insights
-    .filter((i) => (i.actualRevenue || 0) > 0)
-    .slice(0, 10)
-    .map((i) => ({
-      name: i.categoryName,
-      Actual: i.actualRevenue,
-      Forecast: i.predictedRevenue,
-    }));
+  // Category chart: aggregate across all months per category
+  const chartData = (() => {
+    const byCat = new Map<string, { actual: number; forecast: number }>();
+    for (const i of insights) {
+      const existing = byCat.get(i.categoryName) ?? { actual: 0, forecast: 0 };
+      existing.actual += i.actualRevenue || 0;
+      existing.forecast += i.predictedRevenue || 0;
+      byCat.set(i.categoryName, existing);
+    }
+    return Array.from(byCat.entries())
+      .sort(([, a], [, b]) => b.actual - a.actual)
+      .map(([name, { actual, forecast }]) => ({
+        name,
+        Actual: actual > 0 ? actual : null,
+        Forecast: forecast > 0 ? forecast : null,
+      }));
+  })();
+
+  // Extract "YYYY-MM" from a date string like "2025-10-01"
+  const toMonthKey = (dateStr: string): string => dateStr.slice(0, 7);
+
+  // Format "2025-10" → "Oct '25"
+  const fmtMonth = (m: string) => {
+    const [y, mo] = m.split('-');
+    const d = new Date(+y, +mo - 1);
+    return d.toLocaleString('default', { month: 'short' }) + " '" + y.slice(2);
+  };
 
   const trendData = (() => {
     const byMonth = new Map<string, { actual: number; forecast: number }>();
     for (const i of insights) {
-      const m = i.periodMonth?.slice(0, 7) ?? '';
+      const m = i.periodMonth ? toMonthKey(i.periodMonth) : '';
       if (!m) continue;
       const existing = byMonth.get(m) ?? { actual: 0, forecast: 0 };
       existing.actual += i.actualRevenue || 0;
@@ -138,7 +158,7 @@ export default function DashboardPage() {
     return Array.from(byMonth.entries())
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([month, { actual, forecast }]) => ({
-        month,
+        month: fmtMonth(month),
         Actual: actual > 0 ? actual : null,
         Forecast: forecast > 0 ? forecast : null,
       }));
@@ -148,7 +168,7 @@ export default function DashboardPage() {
   const fullTrendData = (() => {
     const byMonth = new Map<string, { actual: number; forecast: number }>();
     for (const i of allInsights) {
-      const m = i.periodMonth?.slice(0, 7) ?? '';
+      const m = i.periodMonth ? toMonthKey(i.periodMonth) : '';
       if (!m) continue;
       const existing = byMonth.get(m) ?? { actual: 0, forecast: 0 };
       existing.actual += i.actualRevenue || 0;
@@ -158,7 +178,8 @@ export default function DashboardPage() {
     return Array.from(byMonth.entries())
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([month, { actual, forecast }]) => ({
-        month,
+        month: fmtMonth(month),
+        monthKey: month,
         Actual: actual > 0 ? actual : null,
         Forecast: forecast > 0 ? forecast : null,
         isForecastOnly: actual === 0 && forecast > 0,
@@ -167,6 +188,7 @@ export default function DashboardPage() {
 
   // First forecast-only month = boundary marker
   const forecastStartMonth = fullTrendData.find((d) => d.isForecastOnly)?.month ?? null;
+  const forecastStartLabel = fullTrendData.find((d) => d.isForecastOnly)?.monthKey ?? null;
 
   return (
     <Layout>
@@ -192,6 +214,13 @@ export default function DashboardPage() {
                 {PERIOD_LABELS[p]}
               </button>
             ))}
+            <button
+              onClick={() => invalidate()}
+              className="flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-gray-50 text-gray-600 border border-gray-200 rounded-lg text-sm font-medium transition-colors"
+              title="Refresh dashboard data"
+            >
+              <RefreshCw size={14} />
+            </button>
             <div className="w-px h-6 bg-gray-200 mx-1" />
             <button
               onClick={() => runForecastMutation.mutate()}
@@ -274,7 +303,7 @@ export default function DashboardPage() {
               <div className="mt-6 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                 <div className="flex items-center justify-between mb-1">
                   <h2 className="text-base font-semibold text-gray-900">Full Revenue Timeline — Actuals &amp; Forecast</h2>
-                  {forecastStartMonth && (
+                  {forecastStartLabel && (
                     <span className="text-xs text-emerald-600 font-medium bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-full">
                       Forecast from {forecastStartMonth}
                     </span>

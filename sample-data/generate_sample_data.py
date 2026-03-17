@@ -5,7 +5,7 @@ Run: python3 generate_sample_data.py
 import csv, random, os
 from datetime import date, timedelta
 
-TENANT = "e883201e-276b-44ce-bc0f-7c9c365ca301"
+TENANT = "acmecorp"
 CATEGORIES = ["Electronics", "Clothing", "Home & Garden", "Sports"]
 LOCATIONS = [
     ("San Francisco", "CA"), ("Los Angeles", "CA"), ("New York", "NY"),

@@ -90,14 +90,14 @@ CREATE TABLE upload_jobs (
 CREATE MATERIALIZED VIEW mv_final_sales_insights AS
 SELECT
     fsd.tenant_id,
-    DATE_TRUNC('month', fsd.transaction_date)   AS period_month,
+    DATE_TRUNC('month', fsd.transaction_date)::date AS period_month,
     fsd.category_id,
     dc.name                                      AS category_name,
     SUM(CASE WHEN fsd.is_forecast = FALSE THEN fsd.amount ELSE 0 END) AS actual_revenue,
     SUM(CASE WHEN fsd.is_forecast = TRUE  THEN fsd.amount ELSE 0 END) AS predicted_revenue,
     SUM(fsd.units_sold)                          AS total_units,
     RANK() OVER (
-        PARTITION BY fsd.tenant_id, DATE_TRUNC('month', fsd.transaction_date)
+        PARTITION BY fsd.tenant_id, DATE_TRUNC('month', fsd.transaction_date)::date
         ORDER BY SUM(fsd.amount) DESC
     ) AS category_rank
 FROM fact_sales_daily fsd

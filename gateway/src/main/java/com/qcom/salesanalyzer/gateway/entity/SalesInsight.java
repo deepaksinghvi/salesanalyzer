@@ -6,7 +6,7 @@ import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Subselect;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter
@@ -22,7 +22,7 @@ public class SalesInsight {
 
     @Id
     @Column(name = "period_month")
-    private OffsetDateTime periodMonth;
+    private LocalDate periodMonth;
 
     @Id
     @Column(name = "category_id")

@@ -1,7 +1,9 @@
 package com.qcom.salesanalyzer.gateway.service;
 
 import com.qcom.salesanalyzer.gateway.dto.UploadResponse;
+import com.qcom.salesanalyzer.gateway.entity.Tenant;
 import com.qcom.salesanalyzer.gateway.entity.UploadJob;
+import com.qcom.salesanalyzer.gateway.repository.TenantRepository;
 import com.qcom.salesanalyzer.gateway.repository.UploadJobRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,7 @@ import java.util.UUID;
 public class UploadService {
 
     private final UploadJobRepository uploadJobRepository;
+    private final TenantRepository tenantRepository;
     private final RestTemplate restTemplate;
 
     @Value("${app.upload.tmp-dir}")
@@ -75,6 +78,8 @@ public class UploadService {
             Map<String, Object> payload = new HashMap<>();
             payload.put("jobId", job.getJobId().toString());
             payload.put("tenantId", job.getTenantId().toString());
+            payload.put("tenantName", tenantRepository.findById(job.getTenantId())
+                    .map(Tenant::getCompanyName).orElse("unknown"));
             payload.put("filePath", job.getFilePath());
             payload.put("periodType", job.getPeriodType());
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);

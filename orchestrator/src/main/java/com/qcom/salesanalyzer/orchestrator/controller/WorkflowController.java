@@ -2,6 +2,7 @@ package com.qcom.salesanalyzer.orchestrator.controller;
 
 import com.qcom.salesanalyzer.orchestrator.workflow.ForecastTriggerWorkflow;
 import com.qcom.salesanalyzer.orchestrator.workflow.SalesUploadWorkflow;
+import io.temporal.api.common.v1.SearchAttributes;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import lombok.RequiredArgsConstructor;
@@ -21,37 +22,42 @@ public class WorkflowController {
 
     @PostMapping("/process-upload")
     public ResponseEntity<Map<String, String>> processUpload(@RequestBody Map<String, String> payload) {
-        String jobId     = payload.get("jobId");
-        String tenantId  = payload.get("tenantId");
-        String filePath  = payload.get("filePath");
+        String jobId      = payload.get("jobId");
+        String tenantId   = payload.get("tenantId");
+        String tenantName = payload.getOrDefault("tenantName", "unknown");
+        String filePath   = payload.get("filePath");
         String periodType = payload.get("periodType");
 
-        log.info("Starting SalesUploadWorkflow for jobId={}, tenantId={}", jobId, tenantId);
+        String workflowId = "upload-" + tenantName + "-" + jobId.substring(0, Math.min(8, jobId.length()));
+
+        log.info("Starting SalesUploadWorkflow: workflowId={}, tenant={} ({})", workflowId, tenantName, tenantId);
 
         SalesUploadWorkflow workflow = workflowClient.newWorkflowStub(
                 SalesUploadWorkflow.class,
                 WorkflowOptions.newBuilder()
                         .setTaskQueue("SALES_UPLOAD_TASK_QUEUE")
-                        .setWorkflowId("upload-" + jobId)
+                        .setWorkflowId(workflowId)
                         .build());
 
         WorkflowClient.start(workflow::processUpload, jobId, tenantId, filePath, periodType);
 
         return ResponseEntity.ok(Map.of(
-                "workflowId", "upload-" + jobId,
+                "workflowId", workflowId,
+                "tenantName", tenantName,
                 "status", "STARTED"
         ));
     }
 
     @PostMapping("/trigger-forecast")
     public ResponseEntity<Map<String, String>> triggerForecast(@RequestBody Map<String, String> payload) {
-        String tenantId  = payload.getOrDefault("tenantId", "ALL_TENANTS");
-        String algorithm = payload.getOrDefault("algorithm", "xgboost");
+        String tenantId   = payload.getOrDefault("tenantId", "ALL_TENANTS");
+        String tenantName = payload.getOrDefault("tenantName", "unknown");
+        String algorithm  = payload.getOrDefault("algorithm", "xgboost");
 
-        String workflowId = "forecast-" + tenantId.substring(0, Math.min(8, tenantId.length()))
-                + "-" + System.currentTimeMillis();
+        String workflowId = "forecast-" + tenantName + "-" + algorithm + "-" + System.currentTimeMillis();
 
-        log.info("Starting ForecastTriggerWorkflow: workflowId={}, tenantId={}, algorithm={}", workflowId, tenantId, algorithm);
+        log.info("Starting ForecastTriggerWorkflow: workflowId={}, tenant={} ({}), algorithm={}",
+                workflowId, tenantName, tenantId, algorithm);
 
         ForecastTriggerWorkflow workflow = workflowClient.newWorkflowStub(
                 ForecastTriggerWorkflow.class,
@@ -64,6 +70,7 @@ public class WorkflowController {
 
         return ResponseEntity.ok(Map.of(
                 "workflowId", workflowId,
+                "tenantName", tenantName,
                 "tenantId", tenantId,
                 "algorithm", algorithm,
                 "status", "STARTED"

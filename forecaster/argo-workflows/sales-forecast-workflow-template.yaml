@@ -114,13 +114,17 @@ spec:
           - |
             pip install -q prophet pandas
             cat > /tmp/run_forecast.py << 'PYEOF'
-            import pandas as pd, base64, io, os
+            import pandas as pd, base64, io, os, calendar
             from prophet import Prophet
-            horizon = int(os.environ['HORIZON'])
             actuals_b64 = os.environ['ACTUALS_B64']
             csv_data = base64.b64decode(actuals_b64.encode()).decode()
             df = pd.read_csv(io.StringIO(csv_data))
             df['ds'] = pd.to_datetime(df['ds'])
+            # Compute horizon as exact days in the next calendar month
+            max_date = df['ds'].max()
+            next_month_start = (max_date.replace(day=1) + pd.DateOffset(months=1))
+            horizon = calendar.monthrange(next_month_start.year, next_month_start.month)[1]
+            print(f'Forecast horizon: {horizon} days (full month of {next_month_start.strftime("%B %Y")})')
             results = []
             # Aggregate to daily totals per category (not per location — locations are sparse)
             df_cat = df.groupby(['category_id', 'ds']).agg(
@@ -159,7 +163,7 @@ spec:
                 f.write(encoded)
             print(f'Forecast complete: {len(results)} rows')
             PYEOF
-            HORIZON="{{workflow.parameters.forecast-horizon-days}}" ACTUALS_B64="{{inputs.parameters.actuals-b64}}" python /tmp/run_forecast.py
+            ACTUALS_B64="{{inputs.parameters.actuals-b64}}" python /tmp/run_forecast.py
 
     - name: write-forecast-results
       inputs:

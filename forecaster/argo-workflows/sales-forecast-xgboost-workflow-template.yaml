@@ -117,11 +117,17 @@ spec:
             import pandas as pd, numpy as np, base64, io, os
             from xgboost import XGBRegressor
 
-            horizon = int(os.environ['HORIZON'])
+            import calendar
             actuals_b64 = os.environ['ACTUALS_B64']
             csv_data = base64.b64decode(actuals_b64.encode()).decode()
             df = pd.read_csv(io.StringIO(csv_data))
             df['ds'] = pd.to_datetime(df['ds'])
+
+            # Compute horizon as exact days in the next calendar month
+            max_date = df['ds'].max()
+            next_month_start = (max_date.replace(day=1) + pd.DateOffset(months=1))
+            horizon = calendar.monthrange(next_month_start.year, next_month_start.month)[1]
+            print(f'Forecast horizon: {horizon} days (full month of {next_month_start.strftime("%B %Y")})')
 
             # Aggregate to daily totals per category (locations are sparse)
             df_cat = df.groupby(['category_id', 'ds']).agg(
@@ -227,7 +233,7 @@ spec:
                 f.write(encoded)
             print(f'XGBoost forecast complete: {len(results)} rows')
             PYEOF
-            HORIZON="{{workflow.parameters.forecast-horizon-days}}" ACTUALS_B64="{{inputs.parameters.actuals-b64}}" python /tmp/run_forecast.py
+            ACTUALS_B64="{{inputs.parameters.actuals-b64}}" python /tmp/run_forecast.py
 
     - name: write-forecast-results
       inputs:

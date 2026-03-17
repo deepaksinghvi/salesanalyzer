@@ -1,0 +1,54 @@
+# Infrastructure-only compose for local development.
+# Java services and UI run locally (not in Docker).
+# Usage: docker compose -f docker/docker-compose.infra.yml up -d
+
+services:
+
+  # ── PostgreSQL ────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: salesanalyzer-postgres
+    environment:
+      POSTGRES_DB: salesanalyzer
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Temporal Server (all-in-one dev mode) ────────────────────
+  temporal:
+    image: temporalio/auto-setup:1.25.2
+    container_name: salesanalyzer-temporal
+    environment:
+      - DB=postgres12
+      - DB_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PWD=postgres
+      - POSTGRES_SEEDS=postgres
+    ports:
+      - "7233:7233"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ── Temporal Web UI ───────────────────────────────────────────
+  temporal-ui:
+    image: temporalio/ui:2.34.0
+    container_name: salesanalyzer-temporal-ui
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CORS_ORIGINS=http://localhost:5173
+    ports:
+      - "8088:8080"
+    depends_on:
+      - temporal
+
+volumes:
+  postgres_data:

@@ -9,7 +9,7 @@
 # ──────────────────────────────────────────────────────────
 set -euo pipefail
 
-DOCKER_PG="51c780e00abb"
+PG_CONTAINER="salesanalyzer-postgres"
 
 BOLD="\033[1m"
 GREEN="\033[32m"
@@ -18,11 +18,11 @@ RED="\033[31m"
 RESET="\033[0m"
 
 sql() {
-  docker exec "$DOCKER_PG" psql -U postgres -d salesanalyzer -t -A -c "$1" 2>/dev/null
+  docker exec "$PG_CONTAINER" psql -U postgres -d salesanalyzer -t -A -c "$1" 2>/dev/null
 }
 
 sql_pretty() {
-  docker exec "$DOCKER_PG" psql -U postgres -d salesanalyzer -c "$1" 2>/dev/null
+  docker exec "$PG_CONTAINER" psql -U postgres -d salesanalyzer -c "$1" 2>/dev/null
 }
 
 usage() {

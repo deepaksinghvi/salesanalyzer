@@ -7,8 +7,7 @@
 # ──────────────────────────────────────────────────────────
 set -euo pipefail
 
-DOCKER_PG="51c780e00abb"
-TENANT="e883201e-276b-44ce-bc0f-7c9c365ca301"
+PG_CONTAINER="salesanalyzer-postgres"
 LOGIN_EMAIL="admin@acmecorp.com"
 LOGIN_PASSWORD="admin"
 GATEWAY="http://localhost:8080"
@@ -44,11 +43,11 @@ warn()    { echo -e "${YELLOW}▸ $1${RESET}"; }
 header()  { echo -e "\n${BOLD}$1${RESET}"; }
 
 sql() {
-  docker exec "$DOCKER_PG" psql -U postgres -d salesanalyzer -t -A -c "$1" 2>/dev/null
+  docker exec "$PG_CONTAINER" psql -U postgres -d salesanalyzer -t -A -c "$1" 2>/dev/null
 }
 
 sql_pretty() {
-  docker exec "$DOCKER_PG" psql -U postgres -d salesanalyzer -c "$1" 2>/dev/null
+  docker exec "$PG_CONTAINER" psql -U postgres -d salesanalyzer -c "$1" 2>/dev/null
 }
 
 wait_for_enter() {
@@ -58,9 +57,13 @@ wait_for_enter() {
 }
 
 login() {
-  TOKEN=$(curl -s "$GATEWAY/api/auth/login" \
+  local response
+  response=$(curl -s "$GATEWAY/api/auth/login" \
     -H "Content-Type: application/json" \
-    -d "{\"email\":\"${LOGIN_EMAIL}\",\"password\":\"${LOGIN_PASSWORD}\"}" | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
+    -d "{\"email\":\"${LOGIN_EMAIL}\",\"password\":\"${LOGIN_PASSWORD}\"}")
+
+  TOKEN=$(echo "$response" | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
+  TENANT=$(echo "$response" | python3 -c "import sys,json; print(json.load(sys.stdin)['tenantId'])")
 }
 
 upload_csv() {
@@ -76,7 +79,7 @@ refresh_mv() {
 }
 
 show_actuals_summary() {
-  header "📊 Loaded Actuals:"
+  header "Loaded Actuals:"
   sql_pretty "
     SELECT DATE_TRUNC('month', transaction_date)::date AS month,
            ROUND(SUM(amount)::numeric, 0) AS revenue,
@@ -87,7 +90,7 @@ show_actuals_summary() {
 }
 
 show_forecast_summary() {
-  header "🔮 Current Forecast:"
+  header "Current Forecast:"
   sql_pretty "
     SELECT DATE_TRUNC('month', transaction_date)::date AS month,
            ROUND(SUM(amount)::numeric, 0) AS revenue,
@@ -115,7 +118,7 @@ show_comparison() {
     return
   fi
 
-  header "⚖️  Actual vs Forecast for ${month_label} (${overlap_month:0:7}):"
+  header "Actual vs Forecast for ${month_label} (${overlap_month:0:7}):"
   sql_pretty "
     SELECT
       c.name AS category,
@@ -170,21 +173,21 @@ trigger_forecast() {
   for i in $(seq 1 60); do
     sleep 5
     local phase
-    phase=$(minikube kubectl -- get workflow "${wf_name}" -n argo \
+    phase=$(kubectl --context minikube get workflow "${wf_name}" -n argo \
       -o jsonpath='{.status.phase}' 2>/dev/null || echo "")
     if [ "$phase" = "Succeeded" ]; then
       echo ""
-      info "Workflow completed ✓"
+      info "Workflow completed"
       return 0
     elif [ "$phase" = "Failed" ] || [ "$phase" = "Error" ]; then
       echo ""
-      echo -e "${RED}  ✗ Workflow ${phase}${RESET}"
+      echo -e "${RED}  Workflow ${phase}${RESET}"
       return 1
     fi
     printf "."
   done
   echo ""
-  echo -e "${RED}  ✗ Workflow timed out after 5 minutes${RESET}"
+  echo -e "${RED}  Workflow timed out after 5 minutes${RESET}"
   return 1
 }
 
@@ -194,18 +197,17 @@ trap 'echo -e "\n${YELLOW}Stopped.${RESET}"; exit 0' INT
 
 banner "Forecast Demo — Algorithm: ${ALGO}"
 info "Using sample data from: ${SCRIPT_DIR}"
-info "Tenant: ${TENANT}"
 
-# Login
-info "Logging in..."
+# Login and resolve tenant UUID dynamically
+info "Logging in as ${LOGIN_EMAIL}..."
 login
-info "Authenticated ✓"
+info "Authenticated — tenant: ${TENANT}"
 
 # Step 0: Clean slate
 banner "Step 0: Resetting all data"
 sql "DELETE FROM fact_sales_daily WHERE tenant_id = '${TENANT}'" > /dev/null
 refresh_mv
-info "All sales data cleared ✓"
+info "All sales data cleared"
 
 # Step 1: Upload seed months
 banner "Step 1: Uploading seed data (${SEED_COUNT} months)"

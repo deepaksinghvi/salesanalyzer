@@ -1,17 +1,17 @@
 package com.qcom.salesanalyzer.gateway.entity;
 
 import java.io.Serializable;
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
 
 public class SalesInsightId implements Serializable {
     private UUID tenantId;
-    private OffsetDateTime periodMonth;
+    private LocalDate periodMonth;
     private Integer categoryId;
 
     public SalesInsightId() {}
 
-    public SalesInsightId(UUID tenantId, OffsetDateTime periodMonth, Integer categoryId) {
+    public SalesInsightId(UUID tenantId, LocalDate periodMonth, Integer categoryId) {
         this.tenantId = tenantId;
         this.periodMonth = periodMonth;
         this.categoryId = categoryId;
