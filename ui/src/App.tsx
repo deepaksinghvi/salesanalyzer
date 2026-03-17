@@ -23,7 +23,7 @@ export default function App() {
               <ProtectedRoute><DashboardPage /></ProtectedRoute>
             } />
             <Route path="/upload" element={
-              <ProtectedRoute><UploadPage /></ProtectedRoute>
+              <ProtectedRoute allowedRoles={['SuperAdmin', 'Admin']}><UploadPage /></ProtectedRoute>
             } />
             <Route path="/tenants" element={
               <ProtectedRoute allowedRoles={['SuperAdmin']}><TenantsPage /></ProtectedRoute>

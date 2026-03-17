@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,6 +29,7 @@ public class ForecastProxyController {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @PostMapping("/trigger")
+    @PreAuthorize("hasAnyRole('Admin', 'SuperAdmin')")
     public ResponseEntity<Map> triggerForecast(@RequestBody Map<String, String> body) {
         String tenantId = body.get("tenantId");
         String algorithm = body.getOrDefault("algorithm", "xgboost");
@@ -50,6 +52,7 @@ public class ForecastProxyController {
     }
 
     @DeleteMapping("/{tenantId}")
+    @PreAuthorize("hasAnyRole('Admin', 'SuperAdmin')")
     public ResponseEntity<Void> clearForecast(@PathVariable String tenantId) {
         log.info("Proxying clear forecast for tenantId={}", tenantId);
         restTemplate.delete(forecasterBaseUrl + "/api/forecast/" + tenantId);

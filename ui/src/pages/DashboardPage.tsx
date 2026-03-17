@@ -55,6 +55,7 @@ export default function DashboardPage() {
   const qc = useQueryClient();
   const [period, setPeriod] = useState<Period>('all');
   const [forecastMsg, setForecastMsg] = useState<{ text: string; ok: boolean } | null>(null);
+  const canManage = user?.role === 'Admin' || user?.role === 'SuperAdmin';
 
   const { data: insights = [], isLoading } = useQuery<SalesInsight[]>({
     queryKey: ['insights', user?.tenantId, period],
@@ -221,25 +222,29 @@ export default function DashboardPage() {
             >
               <RefreshCw size={14} />
             </button>
-            <div className="w-px h-6 bg-gray-200 mx-1" />
-            <button
-              onClick={() => runForecastMutation.mutate()}
-              disabled={runForecastMutation.isPending || clearForecastMutation.isPending}
-              className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 text-white rounded-lg text-sm font-medium transition-colors"
-              title="Run forecast for this tenant"
-            >
-              <Play size={14} />
-              {runForecastMutation.isPending ? 'Running…' : 'Run Forecast'}
-            </button>
-            <button
-              onClick={() => { if (confirm('Clear all forecast data for this tenant?')) clearForecastMutation.mutate(); }}
-              disabled={runForecastMutation.isPending || clearForecastMutation.isPending}
-              className="flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-red-50 disabled:bg-gray-100 text-red-600 border border-red-200 rounded-lg text-sm font-medium transition-colors"
-              title="Clear forecast data for this tenant"
-            >
-              <Trash2 size={14} />
-              {clearForecastMutation.isPending ? 'Clearing…' : 'Clear Forecast'}
-            </button>
+            {canManage && (
+              <>
+                <div className="w-px h-6 bg-gray-200 mx-1" />
+                <button
+                  onClick={() => runForecastMutation.mutate()}
+                  disabled={runForecastMutation.isPending || clearForecastMutation.isPending}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 text-white rounded-lg text-sm font-medium transition-colors"
+                  title="Run forecast for this tenant"
+                >
+                  <Play size={14} />
+                  {runForecastMutation.isPending ? 'Running…' : 'Run Forecast'}
+                </button>
+                <button
+                  onClick={() => { if (confirm('Clear all forecast data for this tenant?')) clearForecastMutation.mutate(); }}
+                  disabled={runForecastMutation.isPending || clearForecastMutation.isPending}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-red-50 disabled:bg-gray-100 text-red-600 border border-red-200 rounded-lg text-sm font-medium transition-colors"
+                  title="Clear forecast data for this tenant"
+                >
+                  <Trash2 size={14} />
+                  {clearForecastMutation.isPending ? 'Clearing…' : 'Clear Forecast'}
+                </button>
+              </>
+            )}
           </div>
         </div>
 

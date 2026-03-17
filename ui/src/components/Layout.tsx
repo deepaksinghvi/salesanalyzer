@@ -6,7 +6,7 @@ import {
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
-  { label: 'Upload Data', icon: Upload, path: '/upload' },
+  { label: 'Upload Data', icon: Upload, path: '/upload', roles: ['SuperAdmin', 'Admin'] },
   { label: 'Tenants', icon: Building2, path: '/tenants', roles: ['SuperAdmin'] },
   { label: 'Users', icon: Users, path: '/users', roles: ['SuperAdmin', 'Admin'] },
 ];
