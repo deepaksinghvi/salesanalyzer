@@ -321,20 +321,14 @@ See [mcp-server/README.md](mcp-server/README.md) for setup details.
 
 ---
 
-Results Comparison (May 2026 Forecast)
+## Results Comparison (May 2026 Forecast)
 
-  ┌───────────────┬───────────────┬──────────┬──────────┐
-  │   Category    │ Actuals (Apr) │ Prophet  │ XGBoost  │
-  ├───────────────┼───────────────┼──────────┼──────────┤
-  │ Electronics   │ $144,797      │ $138,519 │ $137,901 │
-  ├───────────────┼───────────────┼──────────┼──────────┤
-  │ Sports        │ $74,216       │ $96,524  │ $79,036  │
-  ├───────────────┼───────────────┼──────────┼──────────┤
-  │ Clothing      │ $38,140       │ $36,288  │ $34,746  │
-  ├───────────────┼───────────────┼──────────┼──────────┤
-  │ Home & Garden │ $25,997       │ $20,438  │ $28,467  │
-  ├───────────────┼───────────────┼──────────┼──────────┤
-  │ Total         │ $283,150      │ $291,769 │ $280,150 │
-  └───────────────┴───────────────┴──────────┴──────────┘
+| Category | Actuals (Apr) | Prophet | XGBoost |
+|---|---|---|---|
+| Electronics | $144,797 | $138,519 | $137,901 |
+| Sports | $74,216 | $96,524 | $79,036 |
+| Clothing | $38,140 | $36,288 | $34,746 |
+| Home & Garden | $25,997 | $20,438 | $28,467 |
+| **Total** | **$283,150** | **$291,769** | **$280,150** |
 
-  Both algorithms produce forecasts in line with actual monthly revenue ranges.
+Both algorithms produce forecasts in line with actual monthly revenue ranges.
