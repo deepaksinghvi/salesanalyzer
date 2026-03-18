@@ -42,7 +42,8 @@ A multi-tenant **Sales Reporting and Forecasting** platform built by **qcom**.
 |---|---|---|---|
 | `gateway` | 8080 | Spring Boot 3 | JWT auth, CSV upload, tenant/user CRUD |
 | `orchestrator` | 8081 | Spring Boot 3 + Temporal | CSV processing workflow, daily MV refresh, weekly forecast trigger |
-| `forecaster` | 8082 | Spring Boot 3 | Argo Workflow submission (Prophet), local linear fallback |
+| `forecaster` | 8082 | Spring Boot 3 | Argo Workflow submission (XGBoost/Prophet), local linear fallback |
+| `mcp-server` | stdio | Python 3.13 + FastMCP | MCP server for Claude integration |
 | `ui` | 3000 | React + Vite + Tailwind | Dashboard, upload, tenant/user management |
 
 ---
@@ -220,7 +221,7 @@ QUICK-9923,2026-03-15,Clothing,New York,NY,1200.00,8
 | Workflow | Task Queue | Trigger |
 |---|---|---|
 | `SalesUploadWorkflow` | `SALES_UPLOAD_TASK_QUEUE` | On CSV upload |
-| `RefreshInsightsWorkflow` | `SALES_REFRESH_TASK_QUEUE` | Daily at midnight (cron) |
+| `RefreshInsightsWorkflow` | `SALES_REFRESH_TASK_QUEUE` | Hourly (cron) |
 | `ForecastTriggerWorkflow` | `FORECAST_TRIGGER_TASK_QUEUE` | Every Monday midnight (cron) |
 
 ---
@@ -237,10 +238,20 @@ Apply to a Kubernetes cluster with Argo Workflows installed:
 kubectl apply -f forecaster/argo-workflows/sales-forecast-workflow-template.yaml
 ```
 
-The workflow runs a **3-step DAG**:
-1. `extract-data` — pulls actuals from PostgreSQL into a CSV
-2. `run-prophet-forecast` — runs Facebook Prophet for each category/location
-3. `write-forecast-results` — writes 30-day forecast rows back to `fact_sales_daily` with `is_forecast=true`
+Two workflow templates are available:
+
+| Template | Algorithm |
+|----------|-----------|
+| `sales-forecast-xgboost-workflow-template.yaml` | XGBoost (default) |
+| `sales-forecast-workflow-template.yaml` | Prophet |
+
+The workflow runs a **4-step DAG**:
+1. `extract-actuals` — pulls actuals from PostgreSQL, base64-encodes CSV
+2. `run-forecast` — runs XGBoost/Prophet, generates predictions for the next calendar month
+3. `write-results` — writes forecast rows to `fact_sales_daily` with `is_forecast=true`
+4. `notify-callback` — sends callback to Orchestrator (Temporal signal)
+
+The forecast horizon is dynamically computed as the exact number of days in the next calendar month.
 
 If Argo is not available, the Forecaster service falls back to a **local linear moving-average** forecast.
 
@@ -298,6 +309,17 @@ If Argo is not available, the Forecaster service falls back to a **local linear 
 | `Admin` | Manage users within own tenant, upload data |
 | `Viewer` | View dashboard only |
 
+---
+
+## MCP Server (Claude Integration)
+
+The `mcp-server/` directory contains a Python MCP server that lets Claude interact with SalesAnalyzer via natural language. Configured in `.mcp.json` at the project root.
+
+Tools: `get_sales_insights`, `get_top_categories`, `run_forecast`, `clear_forecast`, `upload_sales_csv`, `get_connection_info`
+
+See [mcp-server/README.md](mcp-server/README.md) for setup details.
+
+---
 
 Results Comparison (May 2026 Forecast)
 

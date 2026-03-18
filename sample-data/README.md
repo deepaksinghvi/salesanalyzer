@@ -10,7 +10,6 @@ All files are pre-seeded for the `acmecorp` tenant:
 
 | Field | Value |
 |---|---|
-| Tenant ID | `e883201e-276b-44ce-bc0f-7c9c365ca301` |
 | Login | `admin@acmecorp.com` / `admin` |
 
 ---
@@ -69,15 +68,15 @@ Upload oldest-to-newest for accurate trend analysis and forecasting:
 
 ## Forecast Horizon Behaviour
 
-The forecaster generates future months based on how much historical data is available:
+The forecaster dynamically computes the horizon as the exact number of days in the **next calendar month** after the latest actual data:
 
-| Months of Actuals Loaded | Forecast Horizon |
+| Latest Actual Month | Forecast Output |
 |---|---|
-| 1 month | Next 1 month |
-| 3–11 months | Next 3 months (1 quarter) |
-| 12+ months | Next 12 months (1 year) |
+| Jan 2026 (31 days of actuals) | Feb 2026 (28 days) |
+| Feb 2026 | Mar 2026 (31 days) |
+| Dec 2025 | Jan 2026 (31 days) |
 
-Uploading all 6 months above will produce a **3-month (quarterly) forecast**.
+Each forecast run produces exactly **one month** of predictions.
 
 ---
 

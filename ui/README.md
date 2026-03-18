@@ -1,73 +1,69 @@
-# React + TypeScript + Vite
+# UI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React single-page application for the SalesAnalyzer platform. Provides dashboards, data upload, and tenant/user management.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 18, TypeScript, Vite
+- Tailwind CSS
+- Recharts (charts)
+- TanStack React Query (data fetching)
+- React Router v6
 
-## React Compiler
+## Port
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **5173** (Vite dev server)
+- **3000** (production via nginx in Docker)
 
-## Expanding the ESLint configuration
+## Pages
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+| Route | Page | Access |
+|-------|------|--------|
+| `/login` | Login | Public |
+| `/dashboard` | Sales dashboard with charts and forecasting | All roles |
+| `/upload` | CSV file upload | Admin, SuperAdmin |
+| `/tenants` | Tenant management | SuperAdmin |
+| `/users` | User management | Admin, SuperAdmin |
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Dashboard Features
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Revenue trend chart (actual vs forecast by month)
+- Category breakdown bar chart
+- Period filter (month / quarter / year / all)
+- Run Forecast button (XGBoost/Prophet, Admin+ only)
+- Clear Forecast button (Admin+ only)
+- Refresh button
+- Top categories ranking
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Role-Based Visibility
+
+| Feature | Viewer | Admin | SuperAdmin |
+|---------|--------|-------|------------|
+| View dashboard | Yes | Yes | Yes |
+| Upload data | No | Yes | Yes |
+| Run/clear forecast | No | Yes | Yes |
+| Manage users | No | Yes | Yes |
+| Manage tenants | No | No | Yes |
+
+## Configuration
+
+The API base URL is configured via Vite environment variable:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VITE_API_BASE_URL` | `http://localhost:8080` | Gateway API base URL |
+
+## Running
+
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Building
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run build
 ```
+
+Output goes to `dist/`, served by nginx in Docker.
