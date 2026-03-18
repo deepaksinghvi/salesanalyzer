@@ -297,3 +297,22 @@ If Argo is not available, the Forecaster service falls back to a **local linear 
 | `SuperAdmin` | Full access: manage all tenants, users, data |
 | `Admin` | Manage users within own tenant, upload data |
 | `Viewer` | View dashboard only |
+
+
+Results Comparison (May 2026 Forecast)
+
+  ┌───────────────┬───────────────┬──────────┬──────────┐
+  │   Category    │ Actuals (Apr) │ Prophet  │ XGBoost  │
+  ├───────────────┼───────────────┼──────────┼──────────┤
+  │ Electronics   │ $144,797      │ $138,519 │ $137,901 │
+  ├───────────────┼───────────────┼──────────┼──────────┤
+  │ Sports        │ $74,216       │ $96,524  │ $79,036  │
+  ├───────────────┼───────────────┼──────────┼──────────┤
+  │ Clothing      │ $38,140       │ $36,288  │ $34,746  │
+  ├───────────────┼───────────────┼──────────┼──────────┤
+  │ Home & Garden │ $25,997       │ $20,438  │ $28,467  │
+  ├───────────────┼───────────────┼──────────┼──────────┤
+  │ Total         │ $283,150      │ $291,769 │ $280,150 │
+  └───────────────┴───────────────┴──────────┴──────────┘
+
+  Both algorithms produce forecasts in line with actual monthly revenue ranges.

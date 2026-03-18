@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "salesanalyzer": {
+      "command": "mcp-server/.venv/bin/python3.13",
+      "args": ["mcp-server/server.py"],
+      "env": {
+        "SA_GATEWAY_URL": "http://localhost:8080",
+        "SA_EMAIL": "admin@acmecorp.com",
+        "SA_PASSWORD": "admin"
+      }
+    }
+  }
+}
