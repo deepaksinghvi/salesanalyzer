@@ -374,7 +374,18 @@ stop_infra() {
   log "Stopping docker compose services..."
   docker compose -f "$COMPOSE_FILE" down
 
-  log "Infrastructure stopped (minikube left running — use 'minikube stop' to shut it down)"
+  # Stop minikube
+  local mk_state
+  mk_state=$(minikube status -f '{{.Host}}' 2>/dev/null || echo "Stopped")
+  if [[ "$mk_state" == "Running" ]]; then
+    log "Stopping minikube..."
+    minikube stop
+    log "Minikube stopped"
+  else
+    log "Minikube already stopped"
+  fi
+
+  log "Infrastructure stopped"
 }
 
 # =============================================================================
