@@ -258,8 +258,10 @@ start_service() {
       log "$svc started (PID $!)"
       ;;
     ui)
-      log "Starting UI (npm run dev) -> $logfile"
-      (cd "$dir" && npm run dev > "$logfile" 2>&1 &)
+      log "Installing UI dependencies..."
+      (cd "$dir" && npm install --silent)
+      log "Starting UI (vite) -> $logfile"
+      (cd "$dir" && ./node_modules/.bin/vite > "$logfile" 2>&1 &)
       log "UI started, log: $logfile"
       ;;
   esac
