@@ -13,4 +13,5 @@ import java.util.UUID;
 public interface SalesInsightRepository extends JpaRepository<SalesInsight, SalesInsightId> {
     List<SalesInsight> findByTenantIdOrderByPeriodMonthDescCategoryRankAsc(UUID tenantId);
     List<SalesInsight> findByTenantIdAndPeriodMonthGreaterThanEqualOrderByPeriodMonthDescCategoryRankAsc(UUID tenantId, LocalDate from);
+    List<SalesInsight> findByTenantIdAndPeriodMonthBetweenOrderByPeriodMonthDescCategoryRankAsc(UUID tenantId, LocalDate from, LocalDate to);
 }

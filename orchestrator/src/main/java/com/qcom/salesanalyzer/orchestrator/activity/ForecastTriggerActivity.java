@@ -7,5 +7,5 @@ import io.temporal.activity.ActivityMethod;
 public interface ForecastTriggerActivity {
 
     @ActivityMethod
-    String submitForecastRequest(String tenantId, String algorithm, String callbackUrl);
+    String submitForecastRequest(String tenantId, String algorithm, String horizon, String callbackUrl);
 }

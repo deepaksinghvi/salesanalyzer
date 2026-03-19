@@ -57,8 +57,8 @@ public class ArgoWorkflowService {
     }
     private final ObjectMapper jsonMapper = new ObjectMapper();
 
-    public String submitForecastWorkflow(String tenantId, String algorithm, String callbackUrl) throws Exception {
-        Map<String, Object> workflow = buildWorkflowPayload(tenantId, algorithm, callbackUrl);
+    public String submitForecastWorkflow(String tenantId, String algorithm, int horizonDays, String horizon, String callbackUrl) throws Exception {
+        Map<String, Object> workflow = buildWorkflowPayload(tenantId, algorithm, horizonDays, horizon, callbackUrl);
         Map<String, Object> body = Map.of("workflow", workflow);
         String json = jsonMapper.writeValueAsString(body);
 
@@ -80,7 +80,7 @@ public class ArgoWorkflowService {
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> buildWorkflowPayload(String tenantId, String algorithm, String callbackUrl) {
+    private Map<String, Object> buildWorkflowPayload(String tenantId, String algorithm, int horizonDays, String horizon, String callbackUrl) {
         String templateName = "xgboost".equalsIgnoreCase(algorithm) ? xgboostTemplate : prophetTemplate;
         String prefix = "xgboost".equalsIgnoreCase(algorithm) ? "xgb-forecast-" : "sales-forecast-";
 
@@ -92,12 +92,20 @@ public class ArgoWorkflowService {
         tenantArg.put("name", "tenant-id");
         tenantArg.put("value", tenantId);
 
+        Map<String, Object> horizonArg = new HashMap<>();
+        horizonArg.put("name", "forecast-horizon-days");
+        horizonArg.put("value", String.valueOf(horizonDays));
+
+        Map<String, Object> horizonTypeArg = new HashMap<>();
+        horizonTypeArg.put("name", "forecast-horizon");
+        horizonTypeArg.put("value", horizon != null ? horizon : "1m");
+
         Map<String, Object> callbackArg = new HashMap<>();
         callbackArg.put("name", "callback-url");
         callbackArg.put("value", callbackUrl != null ? callbackUrl : "");
 
         Map<String, Object> arguments = new HashMap<>();
-        arguments.put("parameters", List.of(tenantArg, callbackArg));
+        arguments.put("parameters", List.of(tenantArg, horizonArg, horizonTypeArg, callbackArg));
 
         Map<String, Object> spec = new HashMap<>();
         spec.put("workflowTemplateRef", Map.of("name", templateName));

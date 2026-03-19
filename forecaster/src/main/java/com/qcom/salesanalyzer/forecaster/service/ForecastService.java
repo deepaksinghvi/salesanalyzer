@@ -12,9 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -31,23 +33,26 @@ public class ForecastService {
         return applicationContext.getBean(ForecastService.class);
     }
 
-    public String triggerArgoForecast(String tenantId, String algorithm, String callbackUrl) {
+    public String triggerArgoForecast(String tenantId, String algorithm, String horizon, String callbackUrl) {
         String algo = (algorithm != null && !algorithm.isBlank()) ? algorithm : "prophet";
-        log.info("Triggering Argo forecast workflow for tenant {} using algorithm={}", tenantId, algo);
+        String h = (horizon != null && !horizon.isBlank()) ? horizon : "1m";
+        int horizonDays = computeHorizonDays(tenantId, h);
+        log.info("Triggering Argo forecast for tenant {} using algorithm={}, horizon={} ({}d)",
+                tenantId, algo, h, horizonDays);
         try {
-            String workflowName = argoWorkflowService.submitForecastWorkflow(tenantId, algo, callbackUrl);
-            log.info("Argo workflow '{}' submitted for tenant {} (algorithm={}) — it will write forecast data and refresh the MV on completion",
-                    workflowName, tenantId, algo);
+            String workflowName = argoWorkflowService.submitForecastWorkflow(tenantId, algo, horizonDays, h, callbackUrl);
+            log.info("Argo workflow '{}' submitted for tenant {} (algorithm={}, horizon={}d)",
+                    workflowName, tenantId, algo, horizonDays);
             return workflowName;
         } catch (Exception e) {
             log.error("Argo workflow submission failed: {}", e.getMessage(), e);
             log.info("Falling back to local linear forecast for tenant {}", tenantId);
-            return self().runLocalForecast(tenantId);
+            return self().runLocalForecast(tenantId, h);
         }
     }
 
     @Transactional
-    public String runLocalForecast(String tenantId) {
+    public String runLocalForecast(String tenantId, String horizon) {
         UUID tenantUuid = UUID.fromString(tenantId);
         List<FactSalesDaily> actuals = factSalesDailyRepository.findActualsByTenant(tenantUuid);
         if (actuals.isEmpty()) {
@@ -55,21 +60,39 @@ public class ForecastService {
             return "NO_DATA";
         }
 
-        // Remove only future forecast rows (preserve historical forecasts for months that now have actuals)
-        factSalesDailyRepository.deleteFutureForecastsByTenant(tenantUuid);
+        boolean isWeekly = horizon != null && horizon.endsWith("w");
 
-        // Determine the latest actual month — forecast the next single month only
         LocalDate latestActual = actuals.stream()
                 .map(FactSalesDaily::getTransactionDate)
                 .max(LocalDate::compareTo)
                 .orElse(LocalDate.now());
-        LocalDate forecastFromMonth = latestActual.withDayOfMonth(1).plusMonths(1);
 
-        int forecastMonths = 1;
+        int horizonDays = computeHorizonDaysFromDate(latestActual, horizon);
+        LocalDate forecastStart = latestActual.plusDays(1);
+        LocalDate forecastEnd = forecastStart.plusDays(horizonDays - 1);
+
+        if (isWeekly) {
+            // Weekly: delete all existing forecasts (clean slate)
+            factSalesDailyRepository.deleteByTenantIdAndIsForecastTrue(tenantUuid);
+            log.info("Weekly forecast: cleared all existing forecasts for tenant {}", tenantId);
+        } else {
+            // Month+: delete forecasts only for the date range we're about to generate
+            // This replaces overlapping data but preserves forecast months outside this range
+            factSalesDailyRepository.deleteForecastsByTenantAndDateRange(
+                    tenantUuid, forecastStart, forecastEnd);
+            log.info("Month+ forecast: cleared forecasts from {} to {} for tenant {}",
+                    forecastStart, forecastEnd, tenantId);
+        }
 
         // Group by category + location
         Map<String, List<FactSalesDaily>> grouped = actuals.stream().collect(
                 Collectors.groupingBy(f -> f.getCategoryId() + "_" + f.getLocationId()));
+
+        // Compute average daily amount across all actual days (not hardcoded 30)
+        long totalActualDays = actuals.stream()
+                .map(FactSalesDaily::getTransactionDate)
+                .distinct()
+                .count();
 
         List<FactSalesDaily> forecasts = new ArrayList<>();
 
@@ -77,51 +100,36 @@ public class ForecastService {
             int categoryId = rows.get(0).getCategoryId();
             int locationId = rows.get(0).getLocationId();
 
-            // Compute monthly totals from actuals for this category+location
-            Map<LocalDate, BigDecimal> monthlyAmounts = rows.stream().collect(
-                    Collectors.groupingBy(
-                            f -> f.getTransactionDate().withDayOfMonth(1),
-                            Collectors.reducing(BigDecimal.ZERO, FactSalesDaily::getAmount, BigDecimal::add)));
-            Map<LocalDate, Integer> monthlyUnits = rows.stream().collect(
-                    Collectors.groupingBy(
-                            f -> f.getTransactionDate().withDayOfMonth(1),
-                            Collectors.summingInt(FactSalesDaily::getUnitsSold)));
+            BigDecimal totalAmount = rows.stream()
+                    .map(FactSalesDaily::getAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            int totalUnits = rows.stream()
+                    .mapToInt(FactSalesDaily::getUnitsSold)
+                    .sum();
 
-            // Average monthly revenue and units across all actual months
-            int actualMonthCount = monthlyAmounts.size();
-            BigDecimal avgMonthlyAmount = monthlyAmounts.values().stream()
-                    .reduce(BigDecimal.ZERO, BigDecimal::add)
-                    .divide(BigDecimal.valueOf(actualMonthCount), 2, RoundingMode.HALF_UP);
-            double avgMonthlyUnits = monthlyUnits.values().stream()
-                    .mapToInt(Integer::intValue).average().orElse(0);
+            // Daily average based on actual number of days in the data
+            BigDecimal dailyAmount = totalAmount.divide(
+                    BigDecimal.valueOf(totalActualDays), 2, RoundingMode.HALF_UP);
+            int dailyUnits = Math.max(1, (int) Math.round((double) totalUnits / totalActualDays));
 
-            // Insert one row per day in each forecast month so the MV aggregates correctly
-            for (int m = 0; m < forecastMonths; m++) {
-                LocalDate monthStart = forecastFromMonth.plusMonths(m);
-                int daysInMonth = monthStart.lengthOfMonth();
-                // Distribute monthly total evenly across days of the month
-                BigDecimal dailyAmount = avgMonthlyAmount.divide(
-                        BigDecimal.valueOf(daysInMonth), 2, RoundingMode.HALF_UP);
-                int dailyUnits = (int) Math.round(avgMonthlyUnits / daysInMonth);
-
-                for (int d = 0; d < daysInMonth; d++) {
-                    forecasts.add(FactSalesDaily.builder()
-                            .transactionDate(monthStart.plusDays(d))
-                            .tenantId(tenantUuid)
-                            .categoryId(categoryId)
-                            .locationId(locationId)
-                            .amount(dailyAmount)
-                            .unitsSold(dailyUnits)
-                            .isForecast(true)
-                            .build());
-                }
+            for (int d = 0; d < horizonDays; d++) {
+                LocalDate date = forecastStart.plusDays(d);
+                forecasts.add(FactSalesDaily.builder()
+                        .transactionDate(date)
+                        .tenantId(tenantUuid)
+                        .categoryId(categoryId)
+                        .locationId(locationId)
+                        .amount(dailyAmount)
+                        .unitsSold(dailyUnits)
+                        .isForecast(true)
+                        .build());
             }
         });
 
         factSalesDailyRepository.saveAll(forecasts);
-        log.info("Local forecast complete: {} rows for next month ({}) for tenant {}",
-                forecasts.size(), forecastFromMonth, tenantId);
-        return "LOCAL_FORECAST_COMPLETE:1_MONTH";
+        log.info("Local forecast: {} rows for {} days ({} to {}) for tenant {}",
+                forecasts.size(), horizonDays, forecastStart, forecastEnd, tenantId);
+        return "LOCAL_FORECAST_COMPLETE:" + horizon;
     }
 
     @Transactional
@@ -135,5 +143,57 @@ public class ForecastService {
     public void refreshMv() {
         factSalesDailyRepository.refreshMaterializedView();
         log.info("Materialized view refreshed");
+    }
+
+    /**
+     * Compute horizon days from the latest actual date for this tenant.
+     */
+    private int computeHorizonDays(String tenantId, String horizon) {
+        UUID tenantUuid = UUID.fromString(tenantId);
+        List<FactSalesDaily> actuals = factSalesDailyRepository.findActualsByTenant(tenantUuid);
+        LocalDate latestActual = actuals.stream()
+                .map(FactSalesDaily::getTransactionDate)
+                .max(LocalDate::compareTo)
+                .orElse(LocalDate.now());
+        return computeHorizonDaysFromDate(latestActual, horizon);
+    }
+
+    static int computeHorizonDaysFromDate(LocalDate latestActual, String horizon) {
+        if (horizon == null || horizon.isBlank()) horizon = "1m";
+        LocalDate start = latestActual.plusDays(1);
+
+        return switch (horizon) {
+            case "1w" -> 7;
+            case "2w" -> 14;
+            case "3w" -> 21;
+            case "2m" -> {
+                int days = 0;
+                for (int i = 0; i < 2; i++) {
+                    YearMonth ym = YearMonth.from(start.plusMonths(i));
+                    days += ym.lengthOfMonth();
+                }
+                yield days;
+            }
+            case "1q" -> {
+                int days = 0;
+                for (int i = 0; i < 3; i++) {
+                    YearMonth ym = YearMonth.from(start.plusMonths(i));
+                    days += ym.lengthOfMonth();
+                }
+                yield days;
+            }
+            case "1y" -> {
+                int days = 0;
+                for (int i = 0; i < 12; i++) {
+                    YearMonth ym = YearMonth.from(start.plusMonths(i));
+                    days += ym.lengthOfMonth();
+                }
+                yield days;
+            }
+            default -> { // "1m"
+                YearMonth ym = YearMonth.from(start);
+                yield ym.lengthOfMonth();
+            }
+        };
     }
 }

@@ -1,0 +1,613 @@
+tenant_id,transaction_date,category_name,city,region,total_revenue,units_sold
+acmecorp,2026-05-01,Electronics,Austin,TX,3443.32,10
+acmecorp,2026-05-01,Clothing,New York,NY,814.99,7
+acmecorp,2026-05-01,Home & Garden,New York,NY,648.22,10
+acmecorp,2026-05-01,Sports,Seattle,WA,2693.85,16
+acmecorp,2026-05-02,Electronics,Chicago,IL,4492.71,12
+acmecorp,2026-05-02,Clothing,Chicago,IL,911.84,13
+acmecorp,2026-05-02,Home & Garden,Los Angeles,CA,1046.83,4
+acmecorp,2026-05-02,Sports,San Francisco,CA,1784.52,8
+acmecorp,2026-05-03,Electronics,Chicago,IL,3982.39,13
+acmecorp,2026-05-03,Clothing,Los Angeles,CA,972.45,10
+acmecorp,2026-05-03,Home & Garden,San Francisco,CA,612.12,7
+acmecorp,2026-05-03,Sports,Los Angeles,CA,1762.52,9
+acmecorp,2026-05-04,Electronics,Dallas,TX,5129.93,18
+acmecorp,2026-05-04,Clothing,Austin,TX,1748.14,12
+acmecorp,2026-05-04,Home & Garden,Chicago,IL,827.62,8
+acmecorp,2026-05-04,Sports,Seattle,WA,2716.99,8
+acmecorp,2026-05-05,Electronics,Dallas,TX,5051.34,16
+acmecorp,2026-05-05,Clothing,New York,NY,925.07,13
+acmecorp,2026-05-05,Home & Garden,San Francisco,CA,855.51,8
+acmecorp,2026-05-05,Sports,Seattle,WA,1795.01,8
+acmecorp,2026-05-06,Electronics,Los Angeles,CA,4829.09,12
+acmecorp,2026-05-06,Clothing,Dallas,TX,888.28,13
+acmecorp,2026-05-06,Home & Garden,Los Angeles,CA,641.28,9
+acmecorp,2026-05-06,Sports,Austin,TX,2581.25,16
+acmecorp,2026-05-07,Electronics,Chicago,IL,4418.3,18
+acmecorp,2026-05-07,Clothing,Seattle,WA,1452.77,9
+acmecorp,2026-05-07,Home & Garden,San Francisco,CA,656.54,6
+acmecorp,2026-05-07,Sports,San Francisco,CA,1456.13,15
+acmecorp,2026-05-08,Electronics,Los Angeles,CA,4157.11,16
+acmecorp,2026-05-08,Clothing,Dallas,TX,1490.46,9
+acmecorp,2026-05-08,Home & Garden,Seattle,WA,682.57,5
+acmecorp,2026-05-08,Sports,Chicago,IL,2360.54,15
+acmecorp,2026-05-09,Electronics,New York,NY,5029.39,13
+acmecorp,2026-05-09,Clothing,Los Angeles,CA,1308.21,12
+acmecorp,2026-05-09,Home & Garden,New York,NY,1016.99,7
+acmecorp,2026-05-09,Sports,Austin,TX,2064.86,13
+acmecorp,2026-05-10,Electronics,Los Angeles,CA,5150.94,19
+acmecorp,2026-05-10,Clothing,Dallas,TX,1472.41,13
+acmecorp,2026-05-10,Home & Garden,Chicago,IL,965.76,9
+acmecorp,2026-05-10,Sports,Dallas,TX,2474.9,15
+acmecorp,2026-05-11,Electronics,Seattle,WA,5958.15,19
+acmecorp,2026-05-11,Clothing,Austin,TX,1623.07,9
+acmecorp,2026-05-11,Home & Garden,Austin,TX,645.49,5
+acmecorp,2026-05-11,Sports,Chicago,IL,1860.42,9
+acmecorp,2026-05-12,Electronics,Los Angeles,CA,5444.84,12
+acmecorp,2026-05-12,Clothing,Austin,TX,914.43,13
+acmecorp,2026-05-12,Home & Garden,Los Angeles,CA,822.42,9
+acmecorp,2026-05-12,Sports,San Francisco,CA,2682.97,7
+acmecorp,2026-05-13,Electronics,San Francisco,CA,3996.5,9
+acmecorp,2026-05-13,Clothing,Los Angeles,CA,1373.13,8
+acmecorp,2026-05-13,Home & Garden,San Francisco,CA,605.88,4
+acmecorp,2026-05-13,Sports,San Francisco,CA,1593.01,13
+acmecorp,2026-05-14,Electronics,New York,NY,3744.77,9
+acmecorp,2026-05-14,Clothing,San Francisco,CA,876.82,10
+acmecorp,2026-05-14,Home & Garden,Chicago,IL,697.68,4
+acmecorp,2026-05-14,Sports,Chicago,IL,2776.46,13
+acmecorp,2026-05-15,Electronics,Austin,TX,5688.4,13
+acmecorp,2026-05-15,Clothing,New York,NY,1570.79,8
+acmecorp,2026-05-15,Home & Garden,Los Angeles,CA,807.35,4
+acmecorp,2026-05-15,Sports,Seattle,WA,2086.75,8
+acmecorp,2026-05-16,Electronics,New York,NY,4331.77,9
+acmecorp,2026-05-16,Clothing,Dallas,TX,1431.74,9
+acmecorp,2026-05-16,Home & Garden,Austin,TX,601.27,4
+acmecorp,2026-05-16,Sports,Los Angeles,CA,2674.4,11
+acmecorp,2026-05-17,Electronics,Chicago,IL,4171.74,18
+acmecorp,2026-05-17,Clothing,Los Angeles,CA,1382.23,10
+acmecorp,2026-05-17,Home & Garden,Austin,TX,870.54,5
+acmecorp,2026-05-17,Sports,Los Angeles,CA,1768.77,9
+acmecorp,2026-05-18,Electronics,Los Angeles,CA,5461.08,16
+acmecorp,2026-05-18,Clothing,Seattle,WA,1279.12,9
+acmecorp,2026-05-18,Home & Garden,Los Angeles,CA,719.93,6
+acmecorp,2026-05-18,Sports,New York,NY,1535.19,8
+acmecorp,2026-05-19,Electronics,Austin,TX,5489.11,15
+acmecorp,2026-05-19,Clothing,Dallas,TX,933.56,10
+acmecorp,2026-05-19,Home & Garden,Seattle,WA,987.98,6
+acmecorp,2026-05-19,Sports,Los Angeles,CA,2059.79,9
+acmecorp,2026-05-20,Electronics,Austin,TX,5666.75,13
+acmecorp,2026-05-20,Clothing,Chicago,IL,1084.05,9
+acmecorp,2026-05-20,Home & Garden,Seattle,WA,813.86,6
+acmecorp,2026-05-20,Sports,Seattle,WA,1601.63,13
+acmecorp,2026-05-21,Electronics,Chicago,IL,4134.92,19
+acmecorp,2026-05-21,Clothing,Chicago,IL,917.62,11
+acmecorp,2026-05-21,Home & Garden,Los Angeles,CA,736.64,8
+acmecorp,2026-05-21,Sports,San Francisco,CA,1478.05,9
+acmecorp,2026-05-22,Electronics,Seattle,WA,5054.39,16
+acmecorp,2026-05-22,Clothing,New York,NY,1160.18,8
+acmecorp,2026-05-22,Home & Garden,Los Angeles,CA,962.72,10
+acmecorp,2026-05-22,Sports,San Francisco,CA,2169.68,13
+acmecorp,2026-05-23,Electronics,Seattle,WA,3284.93,11
+acmecorp,2026-05-23,Clothing,Los Angeles,CA,756.71,8
+acmecorp,2026-05-23,Home & Garden,Dallas,TX,742.84,10
+acmecorp,2026-05-23,Sports,Los Angeles,CA,2672.79,12
+acmecorp,2026-05-24,Electronics,New York,NY,4399.65,11
+acmecorp,2026-05-24,Clothing,Seattle,WA,1521.86,11
+acmecorp,2026-05-24,Home & Garden,Seattle,WA,671.64,4
+acmecorp,2026-05-24,Sports,Los Angeles,CA,2526.51,14
+acmecorp,2026-05-25,Electronics,San Francisco,CA,4782.2,10
+acmecorp,2026-05-25,Clothing,Chicago,IL,763.8,7
+acmecorp,2026-05-25,Home & Garden,Dallas,TX,1046.6,10
+acmecorp,2026-05-25,Sports,Seattle,WA,2232.99,11
+acmecorp,2026-05-26,Electronics,Austin,TX,4608.58,10
+acmecorp,2026-05-26,Clothing,San Francisco,CA,1338.73,7
+acmecorp,2026-05-26,Home & Garden,Los Angeles,CA,931.62,4
+acmecorp,2026-05-26,Sports,New York,NY,2116.73,8
+acmecorp,2026-05-27,Electronics,Chicago,IL,3853.37,9
+acmecorp,2026-05-27,Clothing,Los Angeles,CA,1054.59,12
+acmecorp,2026-05-27,Home & Garden,Los Angeles,CA,1173.07,5
+acmecorp,2026-05-27,Sports,San Francisco,CA,1970.78,8
+acmecorp,2026-05-28,Electronics,New York,NY,3157.36,18
+acmecorp,2026-05-28,Clothing,Chicago,IL,1389.32,6
+acmecorp,2026-05-28,Home & Garden,Austin,TX,695.19,9
+acmecorp,2026-05-28,Sports,Chicago,IL,1807.41,14
+acmecorp,2026-05-29,Electronics,San Francisco,CA,4092.34,13
+acmecorp,2026-05-29,Clothing,New York,NY,1283.84,6
+acmecorp,2026-05-29,Home & Garden,Los Angeles,CA,670.8,4
+acmecorp,2026-05-29,Sports,New York,NY,2467.98,14
+acmecorp,2026-05-30,Electronics,Los Angeles,CA,3826.6,19
+acmecorp,2026-05-30,Clothing,New York,NY,1582.58,12
+acmecorp,2026-05-30,Home & Garden,San Francisco,CA,722.31,6
+acmecorp,2026-05-30,Sports,Austin,TX,2027.52,12
+acmecorp,2026-05-31,Electronics,New York,NY,4070.86,13
+acmecorp,2026-05-31,Clothing,New York,NY,1337.66,12
+acmecorp,2026-05-31,Home & Garden,New York,NY,1066.21,6
+acmecorp,2026-05-31,Sports,Los Angeles,CA,2105.32,9
+acmecorp,2026-06-01,Electronics,Austin,TX,6239.5,19
+acmecorp,2026-06-01,Clothing,Los Angeles,CA,932.67,12
+acmecorp,2026-06-01,Home & Garden,San Francisco,CA,831.04,7
+acmecorp,2026-06-01,Sports,San Francisco,CA,1693.51,7
+acmecorp,2026-06-02,Electronics,Seattle,WA,3899.89,17
+acmecorp,2026-06-02,Clothing,San Francisco,CA,1160.34,13
+acmecorp,2026-06-02,Home & Garden,San Francisco,CA,820.39,8
+acmecorp,2026-06-02,Sports,Seattle,WA,2221.38,8
+acmecorp,2026-06-03,Electronics,San Francisco,CA,4380.46,11
+acmecorp,2026-06-03,Clothing,San Francisco,CA,1006.87,13
+acmecorp,2026-06-03,Home & Garden,Seattle,WA,730.28,6
+acmecorp,2026-06-03,Sports,San Francisco,CA,1810.65,10
+acmecorp,2026-06-04,Electronics,San Francisco,CA,3763.82,13
+acmecorp,2026-06-04,Clothing,Austin,TX,1201.01,7
+acmecorp,2026-06-04,Home & Garden,Los Angeles,CA,904.46,8
+acmecorp,2026-06-04,Sports,Seattle,WA,1702.7,9
+acmecorp,2026-06-05,Electronics,Dallas,TX,4741.19,14
+acmecorp,2026-06-05,Clothing,San Francisco,CA,891.11,7
+acmecorp,2026-06-05,Home & Garden,Los Angeles,CA,684.55,6
+acmecorp,2026-06-05,Sports,Seattle,WA,2032.24,8
+acmecorp,2026-06-06,Electronics,Seattle,WA,5855.96,14
+acmecorp,2026-06-06,Clothing,Dallas,TX,1330.26,12
+acmecorp,2026-06-06,Home & Garden,San Francisco,CA,1005.52,8
+acmecorp,2026-06-06,Sports,Seattle,WA,2841.49,15
+acmecorp,2026-06-07,Electronics,Dallas,TX,6236.14,15
+acmecorp,2026-06-07,Clothing,Dallas,TX,1414.78,9
+acmecorp,2026-06-07,Home & Garden,New York,NY,1060.29,5
+acmecorp,2026-06-07,Sports,Dallas,TX,1865.4,14
+acmecorp,2026-06-08,Electronics,Los Angeles,CA,3970.76,11
+acmecorp,2026-06-08,Clothing,New York,NY,1022.6,9
+acmecorp,2026-06-08,Home & Garden,Dallas,TX,1057.31,7
+acmecorp,2026-06-08,Sports,Dallas,TX,2261.84,8
+acmecorp,2026-06-09,Electronics,Dallas,TX,3991.39,13
+acmecorp,2026-06-09,Clothing,Seattle,WA,1365.22,7
+acmecorp,2026-06-09,Home & Garden,Austin,TX,707.09,9
+acmecorp,2026-06-09,Sports,New York,NY,2799.71,15
+acmecorp,2026-06-10,Electronics,Seattle,WA,4359.95,12
+acmecorp,2026-06-10,Clothing,Chicago,IL,1276.05,8
+acmecorp,2026-06-10,Home & Garden,Chicago,IL,760.84,4
+acmecorp,2026-06-10,Sports,San Francisco,CA,2202.73,15
+acmecorp,2026-06-11,Electronics,Chicago,IL,6548.17,13
+acmecorp,2026-06-11,Clothing,Los Angeles,CA,1130.95,7
+acmecorp,2026-06-11,Home & Garden,New York,NY,805.33,4
+acmecorp,2026-06-11,Sports,Dallas,TX,2651.61,14
+acmecorp,2026-06-12,Electronics,Chicago,IL,5150.64,16
+acmecorp,2026-06-12,Clothing,Chicago,IL,902.42,11
+acmecorp,2026-06-12,Home & Garden,Los Angeles,CA,878.33,5
+acmecorp,2026-06-12,Sports,New York,NY,2513.27,11
+acmecorp,2026-06-13,Electronics,Dallas,TX,4448.38,15
+acmecorp,2026-06-13,Clothing,Dallas,TX,1062.93,7
+acmecorp,2026-06-13,Home & Garden,New York,NY,733.58,7
+acmecorp,2026-06-13,Sports,Chicago,IL,2750.36,17
+acmecorp,2026-06-14,Electronics,San Francisco,CA,4477.74,11
+acmecorp,2026-06-14,Clothing,Austin,TX,1492.76,8
+acmecorp,2026-06-14,Home & Garden,Los Angeles,CA,718.83,8
+acmecorp,2026-06-14,Sports,San Francisco,CA,2019.81,17
+acmecorp,2026-06-15,Electronics,Austin,TX,3659.38,9
+acmecorp,2026-06-15,Clothing,Dallas,TX,1688.11,12
+acmecorp,2026-06-15,Home & Garden,San Francisco,CA,718.1,6
+acmecorp,2026-06-15,Sports,San Francisco,CA,1995.97,13
+acmecorp,2026-06-16,Electronics,Los Angeles,CA,4862.28,20
+acmecorp,2026-06-16,Clothing,Los Angeles,CA,943.87,13
+acmecorp,2026-06-16,Home & Garden,Austin,TX,704.56,7
+acmecorp,2026-06-16,Sports,Chicago,IL,1832.21,8
+acmecorp,2026-06-17,Electronics,New York,NY,3646.43,9
+acmecorp,2026-06-17,Clothing,Chicago,IL,1327.08,13
+acmecorp,2026-06-17,Home & Garden,Seattle,WA,902.17,9
+acmecorp,2026-06-17,Sports,Chicago,IL,2995.62,7
+acmecorp,2026-06-18,Electronics,New York,NY,3142.12,19
+acmecorp,2026-06-18,Clothing,Dallas,TX,1480.34,6
+acmecorp,2026-06-18,Home & Garden,Dallas,TX,862.48,9
+acmecorp,2026-06-18,Sports,Austin,TX,1870.02,10
+acmecorp,2026-06-19,Electronics,Chicago,IL,4227.24,13
+acmecorp,2026-06-19,Clothing,Austin,TX,1494.18,6
+acmecorp,2026-06-19,Home & Garden,Los Angeles,CA,819.31,10
+acmecorp,2026-06-19,Sports,Dallas,TX,1736.37,8
+acmecorp,2026-06-20,Electronics,San Francisco,CA,3421.3,20
+acmecorp,2026-06-20,Clothing,San Francisco,CA,1592.9,9
+acmecorp,2026-06-20,Home & Garden,San Francisco,CA,1097.6,6
+acmecorp,2026-06-20,Sports,Seattle,WA,2342.41,12
+acmecorp,2026-06-21,Electronics,Chicago,IL,5696.35,20
+acmecorp,2026-06-21,Clothing,Seattle,WA,851.58,14
+acmecorp,2026-06-21,Home & Garden,New York,NY,805.52,4
+acmecorp,2026-06-21,Sports,Chicago,IL,2495.1,7
+acmecorp,2026-06-22,Electronics,Austin,TX,3720.08,12
+acmecorp,2026-06-22,Clothing,Dallas,TX,922.77,10
+acmecorp,2026-06-22,Home & Garden,New York,NY,629.94,6
+acmecorp,2026-06-22,Sports,Chicago,IL,2036.24,9
+acmecorp,2026-06-23,Electronics,Dallas,TX,4823.45,18
+acmecorp,2026-06-23,Clothing,Chicago,IL,1116.35,12
+acmecorp,2026-06-23,Home & Garden,Los Angeles,CA,1081.47,9
+acmecorp,2026-06-23,Sports,Austin,TX,2400.14,12
+acmecorp,2026-06-24,Electronics,Los Angeles,CA,3786.34,9
+acmecorp,2026-06-24,Clothing,Seattle,WA,1419.41,7
+acmecorp,2026-06-24,Home & Garden,San Francisco,CA,851.17,9
+acmecorp,2026-06-24,Sports,Chicago,IL,2495.78,7
+acmecorp,2026-06-25,Electronics,New York,NY,5125.27,11
+acmecorp,2026-06-25,Clothing,New York,NY,1500.64,12
+acmecorp,2026-06-25,Home & Garden,San Francisco,CA,849.77,8
+acmecorp,2026-06-25,Sports,Chicago,IL,2791.6,13
+acmecorp,2026-06-26,Electronics,Chicago,IL,5252.12,15
+acmecorp,2026-06-26,Clothing,Los Angeles,CA,1228.96,13
+acmecorp,2026-06-26,Home & Garden,San Francisco,CA,1023.32,8
+acmecorp,2026-06-26,Sports,New York,NY,2833.62,16
+acmecorp,2026-06-27,Electronics,Seattle,WA,4336.53,20
+acmecorp,2026-06-27,Clothing,Chicago,IL,1066.71,10
+acmecorp,2026-06-27,Home & Garden,Chicago,IL,630.33,7
+acmecorp,2026-06-27,Sports,Dallas,TX,2741.45,16
+acmecorp,2026-06-28,Electronics,Los Angeles,CA,5718.68,9
+acmecorp,2026-06-28,Clothing,Chicago,IL,1155.91,12
+acmecorp,2026-06-28,Home & Garden,Seattle,WA,1149.59,5
+acmecorp,2026-06-28,Sports,Chicago,IL,2933.01,15
+acmecorp,2026-06-29,Electronics,San Francisco,CA,4647.73,15
+acmecorp,2026-06-29,Clothing,Chicago,IL,1203.81,10
+acmecorp,2026-06-29,Home & Garden,Dallas,TX,906.51,8
+acmecorp,2026-06-29,Sports,Chicago,IL,2326.88,8
+acmecorp,2026-06-30,Electronics,Los Angeles,CA,5583.27,16
+acmecorp,2026-06-30,Clothing,Los Angeles,CA,1607.25,10
+acmecorp,2026-06-30,Home & Garden,San Francisco,CA,1041.86,9
+acmecorp,2026-06-30,Sports,San Francisco,CA,1720.98,10
+acmecorp,2026-07-01,Electronics,Chicago,IL,7738.82,18
+acmecorp,2026-07-01,Clothing,Seattle,WA,1008.49,12
+acmecorp,2026-07-01,Home & Garden,Dallas,TX,1229.75,8
+acmecorp,2026-07-01,Sports,Austin,TX,3094.51,17
+acmecorp,2026-07-02,Electronics,Austin,TX,7392.86,17
+acmecorp,2026-07-02,Clothing,Seattle,WA,1457.28,15
+acmecorp,2026-07-02,Home & Garden,Chicago,IL,1111.64,9
+acmecorp,2026-07-02,Sports,New York,NY,2782.02,19
+acmecorp,2026-07-03,Electronics,San Francisco,CA,5868.72,17
+acmecorp,2026-07-03,Clothing,Seattle,WA,1505.59,9
+acmecorp,2026-07-03,Home & Garden,Austin,TX,1281.06,5
+acmecorp,2026-07-03,Sports,Austin,TX,2774.5,12
+acmecorp,2026-07-04,Electronics,Dallas,TX,5296.98,12
+acmecorp,2026-07-04,Clothing,Seattle,WA,1056.98,11
+acmecorp,2026-07-04,Home & Garden,San Francisco,CA,1045.38,7
+acmecorp,2026-07-04,Sports,Seattle,WA,2564.78,16
+acmecorp,2026-07-05,Electronics,San Francisco,CA,5349.42,17
+acmecorp,2026-07-05,Clothing,Dallas,TX,1405.55,10
+acmecorp,2026-07-05,Home & Garden,Seattle,WA,1348.62,5
+acmecorp,2026-07-05,Sports,New York,NY,3053.57,18
+acmecorp,2026-07-06,Electronics,Seattle,WA,4049.19,15
+acmecorp,2026-07-06,Clothing,New York,NY,1481.83,15
+acmecorp,2026-07-06,Home & Garden,Chicago,IL,1335.1,10
+acmecorp,2026-07-06,Sports,Chicago,IL,3456.39,17
+acmecorp,2026-07-07,Electronics,New York,NY,6380.02,14
+acmecorp,2026-07-07,Clothing,Seattle,WA,1773.06,9
+acmecorp,2026-07-07,Home & Garden,Los Angeles,CA,1132.69,6
+acmecorp,2026-07-07,Sports,New York,NY,2292.89,12
+acmecorp,2026-07-08,Electronics,New York,NY,7367.19,21
+acmecorp,2026-07-08,Clothing,San Francisco,CA,1553.39,16
+acmecorp,2026-07-08,Home & Garden,Austin,TX,1028.28,12
+acmecorp,2026-07-08,Sports,Dallas,TX,1945.66,11
+acmecorp,2026-07-09,Electronics,Austin,TX,4544.09,19
+acmecorp,2026-07-09,Clothing,New York,NY,1794.18,8
+acmecorp,2026-07-09,Home & Garden,Los Angeles,CA,1035.59,6
+acmecorp,2026-07-09,Sports,Los Angeles,CA,2095.96,14
+acmecorp,2026-07-10,Electronics,Chicago,IL,7252.05,22
+acmecorp,2026-07-10,Clothing,Austin,TX,1272.75,13
+acmecorp,2026-07-10,Home & Garden,Seattle,WA,832.03,8
+acmecorp,2026-07-10,Sports,Los Angeles,CA,1821.47,9
+acmecorp,2026-07-11,Electronics,Austin,TX,4042.57,16
+acmecorp,2026-07-11,Clothing,Austin,TX,1456.47,15
+acmecorp,2026-07-11,Home & Garden,Los Angeles,CA,1357.6,12
+acmecorp,2026-07-11,Sports,Austin,TX,1860.5,9
+acmecorp,2026-07-12,Electronics,San Francisco,CA,7215.32,16
+acmecorp,2026-07-12,Clothing,Dallas,TX,1055.42,16
+acmecorp,2026-07-12,Home & Garden,Chicago,IL,1274.24,10
+acmecorp,2026-07-12,Sports,Los Angeles,CA,2748.25,17
+acmecorp,2026-07-13,Electronics,Chicago,IL,7074.58,22
+acmecorp,2026-07-13,Clothing,San Francisco,CA,1622.32,11
+acmecorp,2026-07-13,Home & Garden,San Francisco,CA,1045.69,12
+acmecorp,2026-07-13,Sports,San Francisco,CA,2879.39,13
+acmecorp,2026-07-14,Electronics,Seattle,WA,5491.92,18
+acmecorp,2026-07-14,Clothing,Los Angeles,CA,1699.88,15
+acmecorp,2026-07-14,Home & Garden,Chicago,IL,900.87,9
+acmecorp,2026-07-14,Sports,Chicago,IL,2239.11,10
+acmecorp,2026-07-15,Electronics,Dallas,TX,7165.89,23
+acmecorp,2026-07-15,Clothing,Seattle,WA,1224.32,11
+acmecorp,2026-07-15,Home & Garden,Chicago,IL,949.44,10
+acmecorp,2026-07-15,Sports,San Francisco,CA,1971.85,12
+acmecorp,2026-07-16,Electronics,San Francisco,CA,4553.22,12
+acmecorp,2026-07-16,Clothing,Austin,TX,1401.98,16
+acmecorp,2026-07-16,Home & Garden,New York,NY,866.22,11
+acmecorp,2026-07-16,Sports,Chicago,IL,1970.19,13
+acmecorp,2026-07-17,Electronics,Los Angeles,CA,5240.2,21
+acmecorp,2026-07-17,Clothing,Dallas,TX,1709.2,10
+acmecorp,2026-07-17,Home & Garden,New York,NY,794.79,9
+acmecorp,2026-07-17,Sports,Los Angeles,CA,2037.91,13
+acmecorp,2026-07-18,Electronics,San Francisco,CA,5775.81,11
+acmecorp,2026-07-18,Clothing,New York,NY,1370.83,15
+acmecorp,2026-07-18,Home & Garden,San Francisco,CA,1010.66,12
+acmecorp,2026-07-18,Sports,Chicago,IL,2138.01,14
+acmecorp,2026-07-19,Electronics,Los Angeles,CA,4195.9,19
+acmecorp,2026-07-19,Clothing,Dallas,TX,1731.72,13
+acmecorp,2026-07-19,Home & Garden,Dallas,TX,922.39,9
+acmecorp,2026-07-19,Sports,Los Angeles,CA,2978.29,14
+acmecorp,2026-07-20,Electronics,San Francisco,CA,6494.46,11
+acmecorp,2026-07-20,Clothing,San Francisco,CA,1578.88,14
+acmecorp,2026-07-20,Home & Garden,Dallas,TX,827.56,11
+acmecorp,2026-07-20,Sports,Chicago,IL,2515.79,10
+acmecorp,2026-07-21,Electronics,Seattle,WA,6147.66,21
+acmecorp,2026-07-21,Clothing,Dallas,TX,1720.84,8
+acmecorp,2026-07-21,Home & Garden,San Francisco,CA,929.4,9
+acmecorp,2026-07-21,Sports,New York,NY,3284.83,15
+acmecorp,2026-07-22,Electronics,Los Angeles,CA,5528.9,12
+acmecorp,2026-07-22,Clothing,Seattle,WA,1068.28,7
+acmecorp,2026-07-22,Home & Garden,New York,NY,914.62,7
+acmecorp,2026-07-22,Sports,Chicago,IL,2266.48,9
+acmecorp,2026-07-23,Electronics,Seattle,WA,6337.88,18
+acmecorp,2026-07-23,Clothing,San Francisco,CA,995.13,16
+acmecorp,2026-07-23,Home & Garden,Chicago,IL,936.56,6
+acmecorp,2026-07-23,Sports,Chicago,IL,2299.58,10
+acmecorp,2026-07-24,Electronics,Austin,TX,5033.86,20
+acmecorp,2026-07-24,Clothing,Austin,TX,1860.71,9
+acmecorp,2026-07-24,Home & Garden,San Francisco,CA,854.45,10
+acmecorp,2026-07-24,Sports,Dallas,TX,2157.7,17
+acmecorp,2026-07-25,Electronics,Seattle,WA,5210.31,17
+acmecorp,2026-07-25,Clothing,Chicago,IL,1287.09,9
+acmecorp,2026-07-25,Home & Garden,New York,NY,763.49,10
+acmecorp,2026-07-25,Sports,Seattle,WA,2476.97,15
+acmecorp,2026-07-26,Electronics,Austin,TX,6892.21,11
+acmecorp,2026-07-26,Clothing,Austin,TX,1919.26,16
+acmecorp,2026-07-26,Home & Garden,New York,NY,800.42,7
+acmecorp,2026-07-26,Sports,Seattle,WA,3011.39,19
+acmecorp,2026-07-27,Electronics,Chicago,IL,6464.45,15
+acmecorp,2026-07-27,Clothing,Austin,TX,1096.4,8
+acmecorp,2026-07-27,Home & Garden,Chicago,IL,845.86,9
+acmecorp,2026-07-27,Sports,Seattle,WA,2498.53,13
+acmecorp,2026-07-28,Electronics,Chicago,IL,5748.83,13
+acmecorp,2026-07-28,Clothing,Austin,TX,902.17,12
+acmecorp,2026-07-28,Home & Garden,Austin,TX,1048.28,6
+acmecorp,2026-07-28,Sports,Los Angeles,CA,1888.45,9
+acmecorp,2026-07-29,Electronics,Dallas,TX,4318.34,15
+acmecorp,2026-07-29,Clothing,Dallas,TX,1108.92,16
+acmecorp,2026-07-29,Home & Garden,Los Angeles,CA,697.24,6
+acmecorp,2026-07-29,Sports,Dallas,TX,2664.46,17
+acmecorp,2026-07-30,Electronics,Chicago,IL,6729.01,15
+acmecorp,2026-07-30,Clothing,Dallas,TX,1403.95,10
+acmecorp,2026-07-30,Home & Garden,New York,NY,979.86,10
+acmecorp,2026-07-30,Sports,San Francisco,CA,2457.51,8
+acmecorp,2026-07-31,Electronics,New York,NY,4763.08,20
+acmecorp,2026-07-31,Clothing,Dallas,TX,1415.39,13
+acmecorp,2026-07-31,Home & Garden,Seattle,WA,890.16,5
+acmecorp,2026-07-31,Sports,Austin,TX,2380.6,8
+acmecorp,2026-08-01,Electronics,Dallas,TX,5332.08,21
+acmecorp,2026-08-01,Clothing,Seattle,WA,1844.26,13
+acmecorp,2026-08-01,Home & Garden,Seattle,WA,1081.67,7
+acmecorp,2026-08-01,Sports,New York,NY,1946.21,18
+acmecorp,2026-08-02,Electronics,Dallas,TX,6486.08,18
+acmecorp,2026-08-02,Clothing,Los Angeles,CA,1399.53,11
+acmecorp,2026-08-02,Home & Garden,San Francisco,CA,1138.67,11
+acmecorp,2026-08-02,Sports,Los Angeles,CA,1656.22,11
+acmecorp,2026-08-03,Electronics,Austin,TX,5741.0,14
+acmecorp,2026-08-03,Clothing,Los Angeles,CA,1538.05,8
+acmecorp,2026-08-03,Home & Garden,Chicago,IL,1076.34,8
+acmecorp,2026-08-03,Sports,Chicago,IL,2445.8,9
+acmecorp,2026-08-04,Electronics,Austin,TX,3997.21,20
+acmecorp,2026-08-04,Clothing,Austin,TX,1942.9,13
+acmecorp,2026-08-04,Home & Garden,Seattle,WA,807.97,6
+acmecorp,2026-08-04,Sports,San Francisco,CA,3229.36,17
+acmecorp,2026-08-05,Electronics,Los Angeles,CA,5742.07,16
+acmecorp,2026-08-05,Clothing,New York,NY,1443.36,14
+acmecorp,2026-08-05,Home & Garden,Los Angeles,CA,1066.46,10
+acmecorp,2026-08-05,Sports,Los Angeles,CA,2583.6,18
+acmecorp,2026-08-06,Electronics,Chicago,IL,4811.54,17
+acmecorp,2026-08-06,Clothing,Austin,TX,1514.9,13
+acmecorp,2026-08-06,Home & Garden,Los Angeles,CA,1157.01,11
+acmecorp,2026-08-06,Sports,Seattle,WA,1865.36,10
+acmecorp,2026-08-07,Electronics,Dallas,TX,6151.07,20
+acmecorp,2026-08-07,Clothing,Austin,TX,1222.07,7
+acmecorp,2026-08-07,Home & Garden,New York,NY,1193.07,11
+acmecorp,2026-08-07,Sports,Los Angeles,CA,1786.08,18
+acmecorp,2026-08-08,Electronics,Austin,TX,6253.3,19
+acmecorp,2026-08-08,Clothing,Los Angeles,CA,1003.34,12
+acmecorp,2026-08-08,Home & Garden,Chicago,IL,1196.05,9
+acmecorp,2026-08-08,Sports,San Francisco,CA,1849.97,11
+acmecorp,2026-08-09,Electronics,Chicago,IL,6319.98,13
+acmecorp,2026-08-09,Clothing,Dallas,TX,1673.18,11
+acmecorp,2026-08-09,Home & Garden,Los Angeles,CA,766.46,9
+acmecorp,2026-08-09,Sports,Austin,TX,2671.42,11
+acmecorp,2026-08-10,Electronics,New York,NY,6676.56,17
+acmecorp,2026-08-10,Clothing,Chicago,IL,1454.03,9
+acmecorp,2026-08-10,Home & Garden,San Francisco,CA,877.66,8
+acmecorp,2026-08-10,Sports,New York,NY,2645.44,16
+acmecorp,2026-08-11,Electronics,Los Angeles,CA,6190.03,17
+acmecorp,2026-08-11,Clothing,Seattle,WA,1570.23,10
+acmecorp,2026-08-11,Home & Garden,San Francisco,CA,651.25,7
+acmecorp,2026-08-11,Sports,New York,NY,2347.11,16
+acmecorp,2026-08-12,Electronics,San Francisco,CA,6272.06,17
+acmecorp,2026-08-12,Clothing,Seattle,WA,1383.84,7
+acmecorp,2026-08-12,Home & Garden,Los Angeles,CA,806.9,9
+acmecorp,2026-08-12,Sports,Dallas,TX,2576.41,9
+acmecorp,2026-08-13,Electronics,San Francisco,CA,6144.13,16
+acmecorp,2026-08-13,Clothing,San Francisco,CA,1250.55,10
+acmecorp,2026-08-13,Home & Garden,Dallas,TX,1302.9,11
+acmecorp,2026-08-13,Sports,Chicago,IL,3137.28,16
+acmecorp,2026-08-14,Electronics,New York,NY,4970.5,21
+acmecorp,2026-08-14,Clothing,San Francisco,CA,1407.63,10
+acmecorp,2026-08-14,Home & Garden,Seattle,WA,813.85,8
+acmecorp,2026-08-14,Sports,Dallas,TX,3096.57,16
+acmecorp,2026-08-15,Electronics,New York,NY,6642.41,22
+acmecorp,2026-08-15,Clothing,Austin,TX,1342.27,7
+acmecorp,2026-08-15,Home & Garden,Seattle,WA,1169.37,8
+acmecorp,2026-08-15,Sports,Los Angeles,CA,2707.52,12
+acmecorp,2026-08-16,Electronics,Chicago,IL,4361.28,14
+acmecorp,2026-08-16,Clothing,Seattle,WA,1087.37,10
+acmecorp,2026-08-16,Home & Garden,Los Angeles,CA,1134.47,5
+acmecorp,2026-08-16,Sports,San Francisco,CA,2912.5,11
+acmecorp,2026-08-17,Electronics,San Francisco,CA,5211.67,22
+acmecorp,2026-08-17,Clothing,Austin,TX,1266.9,7
+acmecorp,2026-08-17,Home & Garden,Seattle,WA,968.82,10
+acmecorp,2026-08-17,Sports,Dallas,TX,2659.12,13
+acmecorp,2026-08-18,Electronics,Dallas,TX,6145.38,19
+acmecorp,2026-08-18,Clothing,Seattle,WA,1713.79,9
+acmecorp,2026-08-18,Home & Garden,Dallas,TX,1073.86,10
+acmecorp,2026-08-18,Sports,Austin,TX,1951.63,15
+acmecorp,2026-08-19,Electronics,San Francisco,CA,5353.52,20
+acmecorp,2026-08-19,Clothing,Dallas,TX,1835.57,12
+acmecorp,2026-08-19,Home & Garden,New York,NY,1104.21,5
+acmecorp,2026-08-19,Sports,Dallas,TX,2595.04,18
+acmecorp,2026-08-20,Electronics,Austin,TX,6476.26,10
+acmecorp,2026-08-20,Clothing,Austin,TX,1478.63,8
+acmecorp,2026-08-20,Home & Garden,Chicago,IL,728.43,5
+acmecorp,2026-08-20,Sports,New York,NY,3160.46,17
+acmecorp,2026-08-21,Electronics,Los Angeles,CA,4761.96,15
+acmecorp,2026-08-21,Clothing,San Francisco,CA,1065.89,8
+acmecorp,2026-08-21,Home & Garden,Dallas,TX,1120.26,6
+acmecorp,2026-08-21,Sports,Chicago,IL,2167.96,9
+acmecorp,2026-08-22,Electronics,San Francisco,CA,6783.17,10
+acmecorp,2026-08-22,Clothing,Austin,TX,986.23,15
+acmecorp,2026-08-22,Home & Garden,Chicago,IL,949.85,7
+acmecorp,2026-08-22,Sports,Seattle,WA,2409.25,11
+acmecorp,2026-08-23,Electronics,Dallas,TX,6176.14,18
+acmecorp,2026-08-23,Clothing,San Francisco,CA,1776.34,13
+acmecorp,2026-08-23,Home & Garden,New York,NY,1178.7,10
+acmecorp,2026-08-23,Sports,San Francisco,CA,2592.1,15
+acmecorp,2026-08-24,Electronics,Seattle,WA,5936.87,17
+acmecorp,2026-08-24,Clothing,Dallas,TX,1375.05,9
+acmecorp,2026-08-24,Home & Garden,Los Angeles,CA,849.86,7
+acmecorp,2026-08-24,Sports,Seattle,WA,1816.85,9
+acmecorp,2026-08-25,Electronics,Dallas,TX,5527.45,13
+acmecorp,2026-08-25,Clothing,San Francisco,CA,1730.23,11
+acmecorp,2026-08-25,Home & Garden,Austin,TX,991.02,11
+acmecorp,2026-08-25,Sports,Los Angeles,CA,2106.7,18
+acmecorp,2026-08-26,Electronics,Seattle,WA,5696.86,19
+acmecorp,2026-08-26,Clothing,Dallas,TX,1333.53,10
+acmecorp,2026-08-26,Home & Garden,Austin,TX,941.03,9
+acmecorp,2026-08-26,Sports,Los Angeles,CA,2753.53,8
+acmecorp,2026-08-27,Electronics,Los Angeles,CA,6269.83,19
+acmecorp,2026-08-27,Clothing,Chicago,IL,1696.34,11
+acmecorp,2026-08-27,Home & Garden,San Francisco,CA,856.0,11
+acmecorp,2026-08-27,Sports,Chicago,IL,2365.24,15
+acmecorp,2026-08-28,Electronics,Dallas,TX,3580.48,12
+acmecorp,2026-08-28,Clothing,Chicago,IL,1779.76,9
+acmecorp,2026-08-28,Home & Garden,Los Angeles,CA,681.21,10
+acmecorp,2026-08-28,Sports,San Francisco,CA,2705.12,9
+acmecorp,2026-08-29,Electronics,San Francisco,CA,4362.67,12
+acmecorp,2026-08-29,Clothing,Dallas,TX,1334.32,7
+acmecorp,2026-08-29,Home & Garden,Chicago,IL,681.44,10
+acmecorp,2026-08-29,Sports,Austin,TX,2757.25,15
+acmecorp,2026-08-30,Electronics,Chicago,IL,5722.43,20
+acmecorp,2026-08-30,Clothing,Seattle,WA,1234.55,10
+acmecorp,2026-08-30,Home & Garden,San Francisco,CA,978.49,7
+acmecorp,2026-08-30,Sports,Seattle,WA,2740.24,16
+acmecorp,2026-08-31,Electronics,Austin,TX,3532.23,16
+acmecorp,2026-08-31,Clothing,New York,NY,1367.25,13
+acmecorp,2026-08-31,Home & Garden,New York,NY,985.25,5
+acmecorp,2026-08-31,Sports,San Francisco,CA,1963.26,16
+acmecorp,2026-09-01,Electronics,New York,NY,5072.07,16
+acmecorp,2026-09-01,Clothing,Los Angeles,CA,1489.52,10
+acmecorp,2026-09-01,Home & Garden,Dallas,TX,901.83,8
+acmecorp,2026-09-01,Sports,New York,NY,2213.83,13
+acmecorp,2026-09-02,Electronics,Seattle,WA,5362.08,13
+acmecorp,2026-09-02,Clothing,New York,NY,977.98,6
+acmecorp,2026-09-02,Home & Garden,Austin,TX,837.59,7
+acmecorp,2026-09-02,Sports,Los Angeles,CA,1851.02,16
+acmecorp,2026-09-03,Electronics,Chicago,IL,5216.48,17
+acmecorp,2026-09-03,Clothing,Los Angeles,CA,1324.59,9
+acmecorp,2026-09-03,Home & Garden,New York,NY,636.02,10
+acmecorp,2026-09-03,Sports,Los Angeles,CA,1985.37,9
+acmecorp,2026-09-04,Electronics,Dallas,TX,4347.16,11
+acmecorp,2026-09-04,Clothing,Los Angeles,CA,880.98,6
+acmecorp,2026-09-04,Home & Garden,New York,NY,897.54,5
+acmecorp,2026-09-04,Sports,Seattle,WA,2882.58,10
+acmecorp,2026-09-05,Electronics,Seattle,WA,4382.53,12
+acmecorp,2026-09-05,Clothing,Chicago,IL,1466.64,6
+acmecorp,2026-09-05,Home & Garden,Chicago,IL,1098.83,9
+acmecorp,2026-09-05,Sports,New York,NY,1774.99,14
+acmecorp,2026-09-06,Electronics,Austin,TX,5607.7,14
+acmecorp,2026-09-06,Clothing,Austin,TX,1266.19,13
+acmecorp,2026-09-06,Home & Garden,Dallas,TX,1131.59,4
+acmecorp,2026-09-06,Sports,Austin,TX,2549.32,13
+acmecorp,2026-09-07,Electronics,New York,NY,3839.11,9
+acmecorp,2026-09-07,Clothing,San Francisco,CA,903.92,11
+acmecorp,2026-09-07,Home & Garden,San Francisco,CA,774.3,5
+acmecorp,2026-09-07,Sports,San Francisco,CA,1506.46,13
+acmecorp,2026-09-08,Electronics,Seattle,WA,3842.65,16
+acmecorp,2026-09-08,Clothing,Dallas,TX,1597.21,6
+acmecorp,2026-09-08,Home & Garden,Austin,TX,861.0,6
+acmecorp,2026-09-08,Sports,Dallas,TX,1945.48,12
+acmecorp,2026-09-09,Electronics,Seattle,WA,3000.14,16
+acmecorp,2026-09-09,Clothing,Chicago,IL,969.45,12
+acmecorp,2026-09-09,Home & Garden,Seattle,WA,752.56,9
+acmecorp,2026-09-09,Sports,Los Angeles,CA,2311.7,7
+acmecorp,2026-09-10,Electronics,Dallas,TX,3847.74,11
+acmecorp,2026-09-10,Clothing,Seattle,WA,1243.59,6
+acmecorp,2026-09-10,Home & Garden,Los Angeles,CA,1041.61,6
+acmecorp,2026-09-10,Sports,Chicago,IL,2355.19,12
+acmecorp,2026-09-11,Electronics,Seattle,WA,4026.88,19
+acmecorp,2026-09-11,Clothing,New York,NY,1141.74,7
+acmecorp,2026-09-11,Home & Garden,New York,NY,603.94,9
+acmecorp,2026-09-11,Sports,Chicago,IL,1847.82,11
+acmecorp,2026-09-12,Electronics,New York,NY,3268.52,10
+acmecorp,2026-09-12,Clothing,Austin,TX,1557.67,12
+acmecorp,2026-09-12,Home & Garden,Los Angeles,CA,877.22,7
+acmecorp,2026-09-12,Sports,Chicago,IL,2320.62,12
+acmecorp,2026-09-13,Electronics,Austin,TX,5867.82,9
+acmecorp,2026-09-13,Clothing,San Francisco,CA,1222.3,13
+acmecorp,2026-09-13,Home & Garden,Chicago,IL,746.57,7
+acmecorp,2026-09-13,Sports,Dallas,TX,1722.87,10
+acmecorp,2026-09-14,Electronics,Seattle,WA,3455.71,18
+acmecorp,2026-09-14,Clothing,Los Angeles,CA,1498.31,12
+acmecorp,2026-09-14,Home & Garden,Dallas,TX,813.99,5
+acmecorp,2026-09-14,Sports,Austin,TX,2337.76,16
+acmecorp,2026-09-15,Electronics,San Francisco,CA,4230.14,19
+acmecorp,2026-09-15,Clothing,Dallas,TX,1013.63,11
+acmecorp,2026-09-15,Home & Garden,San Francisco,CA,791.19,6
+acmecorp,2026-09-15,Sports,Chicago,IL,2681.91,8
+acmecorp,2026-09-16,Electronics,San Francisco,CA,5327.07,12
+acmecorp,2026-09-16,Clothing,Seattle,WA,1543.65,13
+acmecorp,2026-09-16,Home & Garden,Chicago,IL,844.84,9
+acmecorp,2026-09-16,Sports,Austin,TX,2054.99,7
+acmecorp,2026-09-17,Electronics,Seattle,WA,4779.54,13
+acmecorp,2026-09-17,Clothing,Austin,TX,1465.43,11
+acmecorp,2026-09-17,Home & Garden,Seattle,WA,742.17,5
+acmecorp,2026-09-17,Sports,Seattle,WA,1708.84,7
+acmecorp,2026-09-18,Electronics,Chicago,IL,4515.0,18
+acmecorp,2026-09-18,Clothing,Los Angeles,CA,1019.51,10
+acmecorp,2026-09-18,Home & Garden,New York,NY,971.96,9
+acmecorp,2026-09-18,Sports,Los Angeles,CA,1845.4,13
+acmecorp,2026-09-19,Electronics,New York,NY,4085.73,9
+acmecorp,2026-09-19,Clothing,Chicago,IL,1507.25,9
+acmecorp,2026-09-19,Home & Garden,Austin,TX,932.31,6
+acmecorp,2026-09-19,Sports,Los Angeles,CA,2253.86,11
+acmecorp,2026-09-20,Electronics,Los Angeles,CA,5404.54,10
+acmecorp,2026-09-20,Clothing,Los Angeles,CA,1349.67,12
+acmecorp,2026-09-20,Home & Garden,Austin,TX,724.05,5
+acmecorp,2026-09-20,Sports,Dallas,TX,1817.56,8
+acmecorp,2026-09-21,Electronics,Austin,TX,5546.96,13
+acmecorp,2026-09-21,Clothing,Chicago,IL,1181.47,11
+acmecorp,2026-09-21,Home & Garden,Los Angeles,CA,731.28,6
+acmecorp,2026-09-21,Sports,Austin,TX,2732.26,15
+acmecorp,2026-09-22,Electronics,Los Angeles,CA,3309.09,17
+acmecorp,2026-09-22,Clothing,San Francisco,CA,1134.32,13
+acmecorp,2026-09-22,Home & Garden,New York,NY,882.66,5
+acmecorp,2026-09-22,Sports,Chicago,IL,2383.54,11
+acmecorp,2026-09-23,Electronics,Seattle,WA,4308.85,14
+acmecorp,2026-09-23,Clothing,New York,NY,1109.26,9
+acmecorp,2026-09-23,Home & Garden,Dallas,TX,664.22,9
+acmecorp,2026-09-23,Sports,Chicago,IL,2519.09,10
+acmecorp,2026-09-24,Electronics,Austin,TX,4588.85,13
+acmecorp,2026-09-24,Clothing,Austin,TX,1417.14,9
+acmecorp,2026-09-24,Home & Garden,Austin,TX,1036.28,7
+acmecorp,2026-09-24,Sports,Austin,TX,2421.5,7
+acmecorp,2026-09-25,Electronics,Los Angeles,CA,3686.07,10
+acmecorp,2026-09-25,Clothing,Dallas,TX,957.4,12
+acmecorp,2026-09-25,Home & Garden,Seattle,WA,578.58,7
+acmecorp,2026-09-25,Sports,New York,NY,1946.05,10
+acmecorp,2026-09-26,Electronics,Seattle,WA,4760.35,16
+acmecorp,2026-09-26,Clothing,Austin,TX,1549.03,10
+acmecorp,2026-09-26,Home & Garden,San Francisco,CA,927.63,7
+acmecorp,2026-09-26,Sports,Austin,TX,2699.22,7
+acmecorp,2026-09-27,Electronics,Los Angeles,CA,4254.97,17
+acmecorp,2026-09-27,Clothing,San Francisco,CA,1017.74,13
+acmecorp,2026-09-27,Home & Garden,San Francisco,CA,1064.52,4
+acmecorp,2026-09-27,Sports,San Francisco,CA,2434.92,13
+acmecorp,2026-09-28,Electronics,Chicago,IL,4641.77,9
+acmecorp,2026-09-28,Clothing,Los Angeles,CA,1294.65,9
+acmecorp,2026-09-28,Home & Garden,Los Angeles,CA,1039.85,10
+acmecorp,2026-09-28,Sports,Chicago,IL,2018.77,15
+acmecorp,2026-09-29,Electronics,San Francisco,CA,6091.85,16
+acmecorp,2026-09-29,Clothing,Chicago,IL,1245.97,13
+acmecorp,2026-09-29,Home & Garden,Austin,TX,930.18,8
+acmecorp,2026-09-29,Sports,Austin,TX,2484.56,13
+acmecorp,2026-09-30,Electronics,Los Angeles,CA,5226.77,19
+acmecorp,2026-09-30,Clothing,Seattle,WA,920.91,10
+acmecorp,2026-09-30,Home & Garden,San Francisco,CA,1057.45,6
+acmecorp,2026-09-30,Sports,San Francisco,CA,2532.22,11

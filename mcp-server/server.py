@@ -171,12 +171,16 @@ def get_top_categories(period: str = "all", limit: int = 5) -> str:
 
 
 @mcp.tool()
-def run_forecast(algorithm: str = "xgboost") -> str:
+def run_forecast(algorithm: str = "xgboost", horizon: str = "1m") -> str:
     """Trigger an ML-based revenue forecast. This starts a Temporal workflow that runs
-    an Argo/XGBoost or Prophet pipeline to predict next month's revenue.
+    an Argo/XGBoost or Prophet pipeline to predict future revenue.
 
     Args:
         algorithm: Forecasting algorithm to use. Either "xgboost" or "prophet". Defaults to "xgboost".
+        horizon: How far ahead to forecast. Options: "1w" (1 week), "2w" (2 weeks), "3w" (3 weeks),
+                 "1m" (1 month), "2m" (2 months), "1q" (1 quarter), "1y" (1 year).
+                 Defaults to "1m". Minimum data requirements:
+                 weeks need 3 weeks of data, months need 3 months, quarter needs 6 months, year needs 1 year.
     """
     auth = _login()
     if auth.get("role") == "Viewer":
@@ -184,7 +188,7 @@ def run_forecast(algorithm: str = "xgboost") -> str:
 
     resp = httpx.post(
         f"{GATEWAY_URL}/api/forecast/trigger",
-        json={"tenantId": auth["tenant_id"], "algorithm": algorithm},
+        json={"tenantId": auth["tenant_id"], "algorithm": algorithm, "horizon": horizon},
         headers=_headers(),
         timeout=30,
     )
@@ -194,6 +198,7 @@ def run_forecast(algorithm: str = "xgboost") -> str:
     return (
         f"Forecast triggered successfully.\n"
         f"  Algorithm: {algorithm}\n"
+        f"  Horizon: {horizon}\n"
         f"  Workflow ID: {wf_id}\n"
         f"  Status: {data.get('status', 'STARTED')}\n\n"
         f"The forecast runs asynchronously (typically 2-5 minutes). "

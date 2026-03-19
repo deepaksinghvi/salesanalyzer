@@ -8,7 +8,7 @@ import io.temporal.workflow.WorkflowMethod;
 public interface ForecastTriggerWorkflow {
 
     @WorkflowMethod
-    String triggerForecast(String tenantId, String algorithm);
+    String triggerForecast(String tenantId, String algorithm, String horizon);
 
     @SignalMethod
     void forecastCompleted(String status);

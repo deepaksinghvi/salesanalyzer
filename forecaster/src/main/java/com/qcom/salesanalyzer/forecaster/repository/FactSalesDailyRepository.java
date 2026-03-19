@@ -33,6 +33,12 @@ public interface FactSalesDailyRepository extends JpaRepository<FactSalesDaily, 
     List<FactSalesDaily> findByTenantIdAndTransactionDateAfterAndIsForecastTrue(UUID tenantId, LocalDate date);
 
     @Modifying
+    @Query(value = "DELETE FROM fact_sales_daily "
+            + "WHERE tenant_id = :tenantId AND is_forecast = true "
+            + "AND transaction_date BETWEEN :fromDate AND :toDate", nativeQuery = true)
+    void deleteForecastsByTenantAndDateRange(UUID tenantId, LocalDate fromDate, LocalDate toDate);
+
+    @Modifying
     @Query(value = "REFRESH MATERIALIZED VIEW CONCURRENTLY mv_final_sales_insights", nativeQuery = true)
     void refreshMaterializedView();
 }

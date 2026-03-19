@@ -20,10 +20,11 @@ public class ForecastController {
     @PostMapping("/trigger")
     public ResponseEntity<Map<String, String>> triggerForecast(@RequestBody ForecastRequest request) {
         String algo = request.getAlgorithm() != null ? request.getAlgorithm() : "prophet";
-        log.info("Forecast trigger received for tenantId={}, algorithm={}", request.getTenantId(), algo);
-        String result = forecastService.triggerArgoForecast(request.getTenantId(), algo, request.getCallbackUrl());
-        // Only refresh MV immediately when local fallback was used;
-        // Argo workflows refresh the MV themselves on completion.
+        String horizon = request.getHorizon() != null ? request.getHorizon() : "1m";
+        log.info("Forecast trigger received for tenantId={}, algorithm={}, horizon={}",
+                request.getTenantId(), algo, horizon);
+        String result = forecastService.triggerArgoForecast(
+                request.getTenantId(), algo, horizon, request.getCallbackUrl());
         if (result.startsWith("LOCAL_FORECAST_COMPLETE")) {
             forecastService.refreshMv();
         }
@@ -32,8 +33,9 @@ public class ForecastController {
 
     @PostMapping("/run-local")
     public ResponseEntity<Map<String, String>> runLocalForecast(@RequestBody ForecastRequest request) {
-        log.info("Local forecast triggered for tenantId={}", request.getTenantId());
-        String result = forecastService.runLocalForecast(request.getTenantId());
+        String horizon = request.getHorizon() != null ? request.getHorizon() : "1m";
+        log.info("Local forecast triggered for tenantId={}, horizon={}", request.getTenantId(), horizon);
+        String result = forecastService.runLocalForecast(request.getTenantId(), horizon);
         forecastService.refreshMv();
         return ResponseEntity.ok(Map.of("result", result));
     }

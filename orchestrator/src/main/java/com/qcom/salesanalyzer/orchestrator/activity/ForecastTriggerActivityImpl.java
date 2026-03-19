@@ -24,14 +24,16 @@ public class ForecastTriggerActivityImpl implements ForecastTriggerActivity {
 
     @Override
     @SuppressWarnings("unchecked")
-    public String submitForecastRequest(String tenantId, String algorithm, String callbackUrl) {
-        log.info("Submitting forecast request for tenant={}, algorithm={}, callbackUrl={}", tenantId, algorithm, callbackUrl);
+    public String submitForecastRequest(String tenantId, String algorithm, String horizon, String callbackUrl) {
+        log.info("Submitting forecast request for tenant={}, algorithm={}, horizon={}, callbackUrl={}",
+                tenantId, algorithm, horizon, callbackUrl);
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             Map<String, String> payload = new HashMap<>();
             payload.put("tenantId", tenantId);
             payload.put("algorithm", algorithm);
+            payload.put("horizon", horizon);
             payload.put("callbackUrl", callbackUrl);
             HttpEntity<Map<String, String>> request = new HttpEntity<>(payload, headers);
 

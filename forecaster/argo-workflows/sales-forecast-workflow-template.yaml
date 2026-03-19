@@ -14,6 +14,8 @@ spec:
         value: "postgresql://postgres:postgres@host.minikube.internal:5432/salesanalyzer"
       - name: forecast-horizon-days
         value: "30"
+      - name: forecast-horizon
+        value: "1m"
       - name: callback-url
         value: ""
 
@@ -21,57 +23,41 @@ spec:
     - name: forecast-pipeline
       dag:
         tasks:
-          - name: extract-actuals
-            template: extract-data
-            arguments:
-              parameters:
-                - name: tenant-id
-                  value: "{{workflow.parameters.tenant-id}}"
           - name: run-forecast
-            template: run-prophet-forecast
-            dependencies: [extract-actuals]
+            template: run-prophet-and-write
             arguments:
               parameters:
                 - name: tenant-id
                   value: "{{workflow.parameters.tenant-id}}"
-                - name: actuals-b64
-                  value: "{{tasks.extract-actuals.outputs.parameters.actuals-b64}}"
-          - name: write-results
-            template: write-forecast-results
-            dependencies: [run-forecast]
-            arguments:
-              parameters:
-                - name: tenant-id
-                  value: "{{workflow.parameters.tenant-id}}"
-                - name: forecast-b64
-                  value: "{{tasks.run-forecast.outputs.parameters.forecast-b64}}"
           - name: refresh-mv
             template: refresh-materialized-view
-            dependencies: [write-results]
+            dependencies: [run-forecast]
           - name: notify-orchestrator
             template: notify-callback
             dependencies: [refresh-mv]
             when: "'{{workflow.parameters.callback-url}}' != ''"
 
-    - name: extract-data
+    - name: run-prophet-and-write
       inputs:
         parameters:
           - name: tenant-id
-      outputs:
-        parameters:
-          - name: actuals-b64
-            valueFrom:
-              path: /tmp/actuals-b64.txt
       container:
         image: python:3.11-slim
         command: [sh, -c]
         args:
           - |
-            pip install -q psycopg2-binary
-            cat > /tmp/extract.py << 'PYEOF'
-            import psycopg2, csv, os, base64, io
+            pip install -q psycopg2-binary prophet pandas numpy
+            cat > /tmp/run_forecast.py << 'PYEOF'
+            import psycopg2, pandas as pd, numpy as np, csv, io, os
+            from prophet import Prophet
+
             tenant_id = os.environ['TENANT_ID']
             db_url = os.environ['DB_URL']
+            horizon = int(os.environ.get('HORIZON', '30'))
+            horizon_type = os.environ.get('FORECAST_HORIZON', '1m')
+            is_weekly = horizon_type.endswith('w')
+
+            # ── Step 1: Extract actuals from DB ──
             conn = psycopg2.connect(db_url)
             cursor = conn.cursor()
             cursor.execute(
@@ -87,119 +73,80 @@ spec:
             for row in cursor.fetchall():
                 writer.writerow(row)
             conn.close()
-            encoded = base64.b64encode(buf.getvalue().encode()).decode()
-            with open('/tmp/actuals-b64.txt', 'w') as f:
-                f.write(encoded)
-            print(f'Extracted and encoded actuals')
-            PYEOF
-            TENANT_ID="{{inputs.parameters.tenant-id}}" python /tmp/extract.py
-        env:
-          - name: DB_URL
-            value: "{{workflow.parameters.db-url}}"
-
-    - name: run-prophet-forecast
-      inputs:
-        parameters:
-          - name: tenant-id
-          - name: actuals-b64
-      outputs:
-        parameters:
-          - name: forecast-b64
-            valueFrom:
-              path: /tmp/forecast-b64.txt
-      container:
-        image: python:3.11-slim
-        command: [sh, -c]
-        args:
-          - |
-            pip install -q prophet pandas
-            cat > /tmp/run_forecast.py << 'PYEOF'
-            import pandas as pd, base64, io, os, calendar
-            from prophet import Prophet
-            actuals_b64 = os.environ['ACTUALS_B64']
-            csv_data = base64.b64decode(actuals_b64.encode()).decode()
-            df = pd.read_csv(io.StringIO(csv_data))
+            buf.seek(0)
+            df = pd.read_csv(buf)
             df['ds'] = pd.to_datetime(df['ds'])
-            # Compute horizon as exact days in the next calendar month
-            max_date = df['ds'].max()
-            next_month_start = (max_date.replace(day=1) + pd.DateOffset(months=1))
-            horizon = calendar.monthrange(next_month_start.year, next_month_start.month)[1]
-            print(f'Forecast horizon: {horizon} days (full month of {next_month_start.strftime("%B %Y")})')
-            results = []
-            # Aggregate to daily totals per category (not per location — locations are sparse)
+            print(f'Extracted {len(df)} actuals. Forecast horizon: {horizon} days ({horizon_type})')
+
+            # ── Step 2: Run Prophet forecast ──
             df_cat = df.groupby(['category_id', 'ds']).agg(
                 y=('y', 'sum'), units_sold=('units_sold', 'sum')
             ).reset_index()
             global_max_date = df_cat['ds'].max()
-            # Compute location share of revenue per category from actuals
+
             loc_shares = df.groupby(['category_id', 'location_id'])['y'].sum().reset_index()
             cat_totals = loc_shares.groupby('category_id')['y'].sum().reset_index().rename(columns={'y': 'cat_total'})
             loc_shares = loc_shares.merge(cat_totals, on='category_id')
             loc_shares['share'] = loc_shares['y'] / loc_shares['cat_total']
+
+            results = []
             for cat, group in df_cat.groupby('category_id'):
                 if len(group) < 2:
                     continue
-                # Forecast revenue at category level
                 model = Prophet(daily_seasonality=False, yearly_seasonality=True, weekly_seasonality=True)
                 model.fit(group[['ds', 'y']].sort_values('ds'))
                 future = model.make_future_dataframe(periods=horizon)
                 forecast = model.predict(future)
                 forecast = forecast[forecast['ds'] > global_max_date].head(horizon)
-                # Revenue-per-unit for this category
+
                 cat_rev = group['y'].sum()
                 cat_units = group['units_sold'].sum()
                 rev_per_unit = cat_rev / cat_units if cat_units > 0 else 1.0
-                # Distribute forecast across locations by their historical share
+
                 cat_locs = loc_shares[loc_shares['category_id'] == cat]
                 for _, frow in forecast.iterrows():
                     for _, lrow in cat_locs.iterrows():
                         amt = max(0, round(frow['yhat'] * lrow['share'], 2))
                         units = max(0, round(amt / rev_per_unit))
-                        results.append({'transaction_date': str(frow['ds'].date()), 'category_id': int(cat), 'location_id': int(lrow['location_id']), 'amount': amt, 'units_sold': int(units)})
-            out_buf = io.StringIO()
-            pd.DataFrame(results).to_csv(out_buf, index=False)
-            encoded = base64.b64encode(out_buf.getvalue().encode()).decode()
-            with open('/tmp/forecast-b64.txt', 'w') as f:
-                f.write(encoded)
-            print(f'Forecast complete: {len(results)} rows')
-            PYEOF
-            ACTUALS_B64="{{inputs.parameters.actuals-b64}}" python /tmp/run_forecast.py
+                        results.append({
+                            'transaction_date': str(frow['ds'].date()),
+                            'category_id': int(cat),
+                            'location_id': int(lrow['location_id']),
+                            'amount': amt,
+                            'units_sold': int(units),
+                        })
+            print(f'Prophet forecast complete: {len(results)} rows')
 
-    - name: write-forecast-results
-      inputs:
-        parameters:
-          - name: tenant-id
-          - name: forecast-b64
-      container:
-        image: python:3.11-slim
-        command: [sh, -c]
-        args:
-          - |
-            pip install -q psycopg2-binary pandas
-            cat > /tmp/write.py << 'PYEOF'
-            import psycopg2, pandas as pd, base64, io, os
-            tenant_id = os.environ['TENANT_ID']
-            db_url = os.environ['DB_URL']
-            forecast_b64 = os.environ['FORECAST_B64']
-            csv_data = base64.b64decode(forecast_b64.encode()).decode()
-            df = pd.read_csv(io.StringIO(csv_data))
+            # ── Step 3: Write results to DB ──
+            result_df = pd.DataFrame(results)
             conn = psycopg2.connect(db_url)
             cursor = conn.cursor()
-            cursor.execute(
-                'DELETE FROM fact_sales_daily '
-                'WHERE tenant_id = %s AND is_forecast = true '
-                'AND DATE_TRUNC(\'month\', transaction_date) NOT IN ('
-                '  SELECT DISTINCT DATE_TRUNC(\'month\', transaction_date) '
-                '  FROM fact_sales_daily '
-                '  WHERE tenant_id = %s AND is_forecast = false'
-                ')', (tenant_id, tenant_id))
-            for _, row in df.iterrows():
-                cursor.execute('INSERT INTO fact_sales_daily (transaction_date, tenant_id, category_id, location_id, amount, units_sold, is_forecast) VALUES (%s, %s, %s, %s, %s, %s, true)', (row['transaction_date'], tenant_id, int(row['category_id']), int(row['location_id']), float(row['amount']), int(row['units_sold'])))
+            if is_weekly:
+                cursor.execute(
+                    'DELETE FROM fact_sales_daily WHERE tenant_id = %s AND is_forecast = true',
+                    (tenant_id,))
+                print('Weekly: deleted all existing forecasts')
+            else:
+                new_months = set(pd.to_datetime(result_df['transaction_date']).dt.to_period('M').astype(str).unique())
+                if new_months:
+                    placeholders = ','.join(['%s'] * len(new_months))
+                    month_dates = [m + '-01' for m in new_months]
+                    cursor.execute(
+                        f'DELETE FROM fact_sales_daily WHERE tenant_id = %s AND is_forecast = true '
+                        f"AND DATE_TRUNC('month', transaction_date)::date IN ({placeholders})",
+                        [tenant_id] + month_dates)
+                    print(f'Month+: cleared {len(new_months)} overlapping forecast months')
+            for _, row in result_df.iterrows():
+                cursor.execute(
+                    'INSERT INTO fact_sales_daily (transaction_date, tenant_id, category_id, location_id, amount, units_sold, is_forecast) '
+                    'VALUES (%s, %s, %s, %s, %s, %s, true)',
+                    (row['transaction_date'], tenant_id, int(row['category_id']), int(row['location_id']),
+                     float(row['amount']), int(row['units_sold'])))
             conn.commit()
             conn.close()
-            print(f'Wrote {len(df)} forecast rows for tenant {tenant_id}')
+            print(f'Wrote {len(result_df)} forecast rows to DB')
             PYEOF
-            TENANT_ID="{{inputs.parameters.tenant-id}}" FORECAST_B64="{{inputs.parameters.forecast-b64}}" python /tmp/write.py
+            TENANT_ID="{{inputs.parameters.tenant-id}}" HORIZON="{{workflow.parameters.forecast-horizon-days}}" FORECAST_HORIZON="{{workflow.parameters.forecast-horizon}}" python /tmp/run_forecast.py
         env:
           - name: DB_URL
             value: "{{workflow.parameters.db-url}}"

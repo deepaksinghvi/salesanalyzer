@@ -53,11 +53,12 @@ public class WorkflowController {
         String tenantId   = payload.getOrDefault("tenantId", "ALL_TENANTS");
         String tenantName = payload.getOrDefault("tenantName", "unknown");
         String algorithm  = payload.getOrDefault("algorithm", "xgboost");
+        String horizon    = payload.getOrDefault("horizon", "1m");
 
         String workflowId = "forecast-" + tenantName + "-" + algorithm + "-" + System.currentTimeMillis();
 
-        log.info("Starting ForecastTriggerWorkflow: workflowId={}, tenant={} ({}), algorithm={}",
-                workflowId, tenantName, tenantId, algorithm);
+        log.info("Starting ForecastTriggerWorkflow: workflowId={}, tenant={} ({}), algorithm={}, horizon={}",
+                workflowId, tenantName, tenantId, algorithm, horizon);
 
         ForecastTriggerWorkflow workflow = workflowClient.newWorkflowStub(
                 ForecastTriggerWorkflow.class,
@@ -66,13 +67,14 @@ public class WorkflowController {
                         .setWorkflowId(workflowId)
                         .build());
 
-        WorkflowClient.start(workflow::triggerForecast, tenantId, algorithm);
+        WorkflowClient.start(workflow::triggerForecast, tenantId, algorithm, horizon);
 
         return ResponseEntity.ok(Map.of(
                 "workflowId", workflowId,
                 "tenantName", tenantName,
                 "tenantId", tenantId,
                 "algorithm", algorithm,
+                "horizon", horizon,
                 "status", "STARTED"
         ));
     }

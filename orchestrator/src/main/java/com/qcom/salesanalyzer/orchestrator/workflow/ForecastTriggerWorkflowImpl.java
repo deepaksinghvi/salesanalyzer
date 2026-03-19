@@ -21,11 +21,11 @@ public class ForecastTriggerWorkflowImpl implements ForecastTriggerWorkflow {
     private String completionStatus = null;
 
     @Override
-    public String triggerForecast(String tenantId, String algorithm) {
+    public String triggerForecast(String tenantId, String algorithm, String horizon) {
         String workflowId = Workflow.getInfo().getWorkflowId();
         String callbackUrl = "http://host.minikube.internal:8081/api/workflows/forecast-callback";
 
-        String argoWorkflowName = forecastActivity.submitForecastRequest(tenantId, algorithm,
+        String argoWorkflowName = forecastActivity.submitForecastRequest(tenantId, algorithm, horizon,
                 callbackUrl + "?workflowId=" + workflowId);
 
         // Wait for Argo to call back (up to 15 minutes)

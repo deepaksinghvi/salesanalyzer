@@ -33,15 +33,18 @@ public class ForecastProxyController {
     public ResponseEntity<Map> triggerForecast(@RequestBody Map<String, String> body) {
         String tenantId = body.get("tenantId");
         String algorithm = body.getOrDefault("algorithm", "xgboost");
+        String horizon = body.getOrDefault("horizon", "1m");
 
         String companyName = tenantRepository.findById(UUID.fromString(tenantId))
                 .map(Tenant::getCompanyName)
                 .orElse("unknown");
 
-        log.info("Routing forecast through Temporal for tenant={} ({}), algorithm={}", companyName, tenantId, algorithm);
+        log.info("Routing forecast through Temporal for tenant={} ({}), algorithm={}, horizon={}",
+                companyName, tenantId, algorithm, horizon);
         return restTemplate.postForEntity(
                 orchestratorBaseUrl + "/api/workflows/trigger-forecast",
-                Map.of("tenantId", tenantId, "algorithm", algorithm, "tenantName", companyName),
+                Map.of("tenantId", tenantId, "algorithm", algorithm,
+                       "tenantName", companyName, "horizon", horizon),
                 Map.class);
     }
 
