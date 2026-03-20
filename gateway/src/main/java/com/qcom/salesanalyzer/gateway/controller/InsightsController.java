@@ -49,20 +49,36 @@ public class InsightsController {
         }
 
         LocalDate now = LocalDate.now();
-        LocalDate fromDate = switch (range.toLowerCase()) {
-            case "last_month" -> now.minusMonths(1).withDayOfMonth(1);
-            case "last_quarter" -> {
-                LocalDate threeMonthsAgo = now.minusMonths(3);
-                yield threeMonthsAgo.withDayOfMonth(1);
+        LocalDate currentMonthStart = now.withDayOfMonth(1);
+        LocalDate fromDate;
+        LocalDate toDate;
+
+        switch (range.toLowerCase()) {
+            case "last_month" -> {
+                fromDate = currentMonthStart.minusMonths(1);
+                toDate = currentMonthStart.minusMonths(1);  // single month
             }
-            case "last_year" -> now.minusYears(1).withDayOfMonth(1);
-            case "ytd" -> now.withMonth(1).withDayOfMonth(1);
-            default -> now.withDayOfMonth(1); // fallback to current month
-        };
+            case "last_quarter" -> {
+                fromDate = currentMonthStart.minusMonths(3);
+                toDate = currentMonthStart.minusMonths(1);
+            }
+            case "last_year" -> {
+                fromDate = currentMonthStart.minusYears(1);
+                toDate = currentMonthStart.minusMonths(1);
+            }
+            case "ytd" -> {
+                fromDate = now.withMonth(1).withDayOfMonth(1);
+                toDate = currentMonthStart;
+            }
+            default -> {
+                fromDate = currentMonthStart;
+                toDate = currentMonthStart;
+            }
+        }
 
         return ResponseEntity.ok(
-                insightRepository.findByTenantIdAndPeriodMonthGreaterThanEqualOrderByPeriodMonthDescCategoryRankAsc(
-                        tenantId, fromDate));
+                insightRepository.findByTenantIdAndPeriodMonthBetweenOrderByPeriodMonthDescCategoryRankAsc(
+                        tenantId, fromDate, toDate));
     }
 
     @GetMapping("/{tenantId}/data-range")

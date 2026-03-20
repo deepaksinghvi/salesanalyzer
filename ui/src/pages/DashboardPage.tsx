@@ -141,6 +141,17 @@ export default function DashboardPage() {
     qc.invalidateQueries({ queryKey: ['data-range'] });
   };
 
+  const [refreshing, setRefreshing] = useState(false);
+  const handleRefresh = async () => {
+    if (!user?.tenantId) return;
+    setRefreshing(true);
+    try {
+      await apiClient.post(`/api/insights/${user.tenantId}/refresh`);
+    } catch { /* summary refresh is best-effort */ }
+    invalidate();
+    setRefreshing(false);
+  };
+
   // Mutations
   const runForecastMutation = useMutation({
     mutationFn: () => triggerForecast(user!.tenantId, selectedAlgorithm, selectedHorizon),
@@ -313,11 +324,12 @@ export default function DashboardPage() {
             </div>
 
             <button
-              onClick={() => invalidate()}
-              className="p-2 bg-white hover:bg-gray-50 text-gray-500 border border-gray-200 rounded-lg transition-colors"
-              title="Refresh"
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="p-2 bg-white hover:bg-gray-50 text-gray-500 border border-gray-200 rounded-lg transition-colors disabled:opacity-50"
+              title="Refresh (recomputes summary)"
             >
-              <RefreshCw size={14} />
+              <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
             </button>
           </div>
         </div>
