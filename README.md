@@ -7,31 +7,45 @@ A multi-tenant **Sales Reporting and Forecasting** platform built by **qcom**.
 ## Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    React UI (port 3000)                  │
-│          Login · Dashboard · Upload · Tenants · Users    │
-└──────────────────────┬──────────────────────────────────┘
-                       │ REST (JWT)
-┌──────────────────────▼──────────────────────────────────┐
-│              Gateway Service (port 8080)                 │
-│          Auth · CSV Upload → /tmp · Tenant/User CRUD     │
-└──────┬───────────────────────────────┬───────────────────┘
-       │ notify                        │ REST
-┌──────▼──────────────┐      ┌─────────▼──────────────────┐
-│ Orchestrator Service│      │   Forecaster Service        │
-│     (port 8081)     │      │      (port 8082)            │
-│  Temporal Workflows │─────▶│  Argo Workflow trigger      │
-│  · process-upload   │      │  + local Prophet fallback   │
-│  · daily refresh    │      └────────────────────────────┘
-│  · weekly forecast  │
-└──────────┬──────────┘
-           │
-┌──────────▼──────────────────────────────────────────────┐
-│                PostgreSQL (port 5432)                    │
-│  dim_tenants · dim_users · dim_categories · dim_locations│
-│  fact_sales_daily · upload_jobs                          │
-│  mv_final_sales_insights (Materialized View)             │
-└─────────────────────────────────────────────────────────┘
+┌──────────────────┐     ┌─────────────────────────────────────────────┐
+│  Claude Desktop  │     │              React UI (port 3000)            │
+│  (AI Assistant)  │     │    Login · Dashboard · Upload · Tenants      │
+└────────┬─────────┘     └──────────────────┬──────────────────────────┘
+         │ MCP (stdio)                      │ REST (JWT)
+┌────────▼─────────┐                        │
+│   MCP Server     │                        │
+│  (Python/FastMCP)│────────────────────────┐│
+│  Tools:          │                        ││
+│  · insights      │                        ││
+│  · forecast      │                        ││
+│  · upload        │                        ││
+└──────────────────┘                        ││
+                                            ││
+┌───────────────────────────────────────────▼▼─────────────┐
+│                Gateway Service (port 8080)                 │
+│           Auth · CSV Upload → /tmp · Tenant/User CRUD      │
+└──────┬────────────────────────────────┬──────────────────┘
+       │ notify                         │ REST
+┌──────▼──────────────┐       ┌─────────▼──────────────────┐
+│ Orchestrator Service│       │   Forecaster Service        │
+│     (port 8081)     │       │      (port 8082)            │
+│  Temporal Workflows │──────▶│  Argo Workflow trigger      │
+│  · process-upload   │       │  + local linear fallback    │
+│  · daily refresh    │       └─────────────┬──────────────┘
+│  · weekly forecast  │                     │
+└──────────┬──────────┘                     │ submit
+           │                     ┌──────────▼──────────────┐
+           │                     │  Argo Workflows (k8s)    │
+           │                     │  · XGBoost pipeline      │
+           │                     │  · Prophet pipeline      │
+           │                     └──────────┬──────────────┘
+           │                                │
+┌──────────▼────────────────────────────────▼──────────────┐
+│                  PostgreSQL (port 5432)                    │
+│  dim_tenants · dim_users · dim_categories · dim_locations  │
+│  fact_sales_daily · upload_jobs                            │
+│  mv_final_sales_insights (Materialized View)               │
+└──────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -71,6 +85,7 @@ mv_final_sales_insights → Materialized view: monthly actual vs forecast by cat
 - Java 21
 - Maven 3.9+
 - Node.js 20+
+- Python 3.13+ (for MCP server)
 - PostgreSQL 16 (local or Docker)
 - Docker + Docker Compose (for full stack)
 - Temporal CLI (for local worker dev)
@@ -245,13 +260,12 @@ Two workflow templates are available:
 | `sales-forecast-xgboost-workflow-template.yaml` | XGBoost (default) |
 | `sales-forecast-workflow-template.yaml` | Prophet |
 
-The workflow runs a **4-step DAG**:
-1. `extract-actuals` — pulls actuals from PostgreSQL, base64-encodes CSV
-2. `run-forecast` — runs XGBoost/Prophet, generates predictions for the next calendar month
-3. `write-results` — writes forecast rows to `fact_sales_daily` with `is_forecast=true`
-4. `notify-callback` — sends callback to Orchestrator (Temporal signal)
+The workflow runs a **3-step DAG**:
+1. `run-forecast` — single step that extracts actuals from PostgreSQL, runs XGBoost/Prophet, and writes forecast rows to `fact_sales_daily` with `is_forecast=true`
+2. `refresh-mv` — refreshes the `mv_final_sales_insights` materialized view
+3. `notify-callback` — sends callback to Orchestrator (Temporal signal)
 
-The forecast horizon is dynamically computed as the exact number of days in the next calendar month.
+Supported forecast horizons: `1w`, `2w`, `3w` (weekly), `1m`, `2m` (monthly), `1q` (quarterly), `1y` (yearly).
 
 If Argo is not available, the Forecaster service falls back to a **local linear moving-average** forecast.
 
@@ -315,9 +329,21 @@ If Argo is not available, the Forecaster service falls back to a **local linear 
 
 The `mcp-server/` directory contains a Python MCP server that lets Claude interact with SalesAnalyzer via natural language. Configured in `.mcp.json` at the project root.
 
-Tools: `get_sales_insights`, `get_top_categories`, `run_forecast`, `clear_forecast`, `upload_sales_csv`, `get_connection_info`
+**Tools:** `get_sales_insights`, `get_top_categories`, `run_forecast`, `clear_forecast`, `upload_sales_csv`, `get_connection_info`
 
-See [mcp-server/README.md](mcp-server/README.md) for setup details.
+### Quick Setup for a New Tenant
+
+```bash
+# Creates the tenant, admin user, and updates .mcp.json in one step
+./mcp-server/setup-tenant.sh admin@newcorp.com
+
+# With a custom password
+./mcp-server/setup-tenant.sh admin@newcorp.com mypassword
+```
+
+The script derives the company name from the email domain (e.g. `admin@newcorp.com` → `newcorp`), creates the tenant and user via the gateway API, and updates `.mcp.json` so Claude uses the new tenant. Restart Claude Code after running.
+
+See [mcp-server/README.md](mcp-server/README.md) for more details.
 
 ---
 
