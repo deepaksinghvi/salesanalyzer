@@ -26,7 +26,7 @@ public class ForecastController {
         String result = forecastService.triggerArgoForecast(
                 request.getTenantId(), algo, horizon, request.getCallbackUrl());
         if (result.startsWith("LOCAL_FORECAST_COMPLETE")) {
-            forecastService.refreshMv();
+            forecastService.refreshSummaryForTenant(request.getTenantId());
         }
         return ResponseEntity.ok(Map.of("workflowName", result, "status", "SUBMITTED"));
     }
@@ -36,7 +36,7 @@ public class ForecastController {
         String horizon = request.getHorizon() != null ? request.getHorizon() : "1m";
         log.info("Local forecast triggered for tenantId={}, horizon={}", request.getTenantId(), horizon);
         String result = forecastService.runLocalForecast(request.getTenantId(), horizon);
-        forecastService.refreshMv();
+        forecastService.refreshSummaryForTenant(request.getTenantId());
         return ResponseEntity.ok(Map.of("result", result));
     }
 
@@ -44,7 +44,7 @@ public class ForecastController {
     public ResponseEntity<Void> clearForecast(@PathVariable String tenantId) {
         log.info("Clearing forecast data for tenantId={}", tenantId);
         forecastService.clearForecast(tenantId);
-        forecastService.refreshMv();
+        forecastService.refreshSummaryForTenant(tenantId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -1,18 +1,23 @@
 package com.qcom.salesanalyzer.gateway.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Subselect;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
-@Immutable
-@Subselect("SELECT tenant_id, period_month, category_id, category_name, actual_revenue, predicted_revenue, total_units, category_rank FROM mv_final_sales_insights")
+@Table(name = "sales_insights_summary")
 @IdClass(SalesInsightId.class)
 public class SalesInsight {
 

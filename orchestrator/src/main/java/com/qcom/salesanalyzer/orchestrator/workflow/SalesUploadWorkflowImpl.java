@@ -35,7 +35,7 @@ public class SalesUploadWorkflowImpl implements SalesUploadWorkflow {
         try {
             int rowsInserted = uploadActivity.parseCsvAndInsert(jobId, tenantId, filePath);
             uploadActivity.updateJobStatus(jobId, "COMPLETED", null);
-            refreshActivity.refreshMaterializedView();
+            refreshActivity.refreshSummaryForTenant(tenantId);
         } catch (Exception e) {
             uploadActivity.updateJobStatus(jobId, "FAILED", e.getMessage());
             throw e;

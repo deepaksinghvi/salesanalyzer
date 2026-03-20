@@ -12,6 +12,8 @@ spec:
         value: ""
       - name: db-url
         value: "postgresql://postgres:postgres@host.minikube.internal:5432/salesanalyzer"
+      - name: gateway-url
+        value: "http://host.minikube.internal:8080"
       - name: forecast-horizon-days
         value: "30"
       - name: forecast-horizon
@@ -29,12 +31,16 @@ spec:
               parameters:
                 - name: tenant-id
                   value: "{{workflow.parameters.tenant-id}}"
-          - name: refresh-mv
-            template: refresh-materialized-view
+          - name: refresh-summary
+            template: refresh-tenant-summary
             dependencies: [run-forecast]
+            arguments:
+              parameters:
+                - name: tenant-id
+                  value: "{{workflow.parameters.tenant-id}}"
           - name: notify-orchestrator
             template: notify-callback
-            dependencies: [refresh-mv]
+            dependencies: [refresh-summary]
             when: "'{{workflow.parameters.callback-url}}' != ''"
 
     - name: run-prophet-and-write
@@ -171,21 +177,27 @@ spec:
           - name: CALLBACK_URL
             value: "{{workflow.parameters.callback-url}}"
 
-    - name: refresh-materialized-view
+    - name: refresh-tenant-summary
+      inputs:
+        parameters:
+          - name: tenant-id
       container:
         image: python:3.11-slim
         command: [sh, -c]
         args:
           - |
-            pip install -q psycopg2-binary
+            pip install -q requests
             python -c "
-            import psycopg2, os
-            conn = psycopg2.connect(os.environ['DB_URL'])
-            conn.autocommit = True
-            conn.cursor().execute('REFRESH MATERIALIZED VIEW CONCURRENTLY mv_final_sales_insights')
-            conn.close()
-            print('Materialized view refreshed')
+            import requests, os
+            gateway_url = os.environ['GATEWAY_URL']
+            tenant_id = os.environ['TENANT_ID']
+            url = f'{gateway_url}/api/insights/{tenant_id}/refresh'
+            resp = requests.post(url, timeout=30)
+            resp.raise_for_status()
+            print(f'Summary refreshed for tenant {tenant_id}: {resp.status_code}')
             "
         env:
-          - name: DB_URL
-            value: "{{workflow.parameters.db-url}}"
+          - name: GATEWAY_URL
+            value: "{{workflow.parameters.gateway-url}}"
+          - name: TENANT_ID
+            value: "{{inputs.parameters.tenant-id}}"

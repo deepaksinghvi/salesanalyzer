@@ -4,10 +4,12 @@ import com.qcom.salesanalyzer.forecaster.entity.FactSalesDaily;
 import com.qcom.salesanalyzer.forecaster.repository.FactSalesDailyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -28,6 +30,10 @@ public class ForecastService {
     private final FactSalesDailyRepository factSalesDailyRepository;
     private final ArgoWorkflowService argoWorkflowService;
     private final ApplicationContext applicationContext;
+    private final RestTemplate restTemplate;
+
+    @Value("${gateway.url:http://localhost:8080}")
+    private String gatewayUrl;
 
     private ForecastService self() {
         return applicationContext.getBean(ForecastService.class);
@@ -143,6 +149,13 @@ public class ForecastService {
     public void refreshMv() {
         factSalesDailyRepository.refreshMaterializedView();
         log.info("Materialized view refreshed");
+    }
+
+    public void refreshSummaryForTenant(String tenantId) {
+        log.info("Refreshing summary table for tenant {}", tenantId);
+        String url = gatewayUrl + "/api/insights/" + tenantId + "/refresh";
+        restTemplate.postForObject(url, null, String.class);
+        log.info("Summary table refreshed for tenant {}", tenantId);
     }
 
     /**

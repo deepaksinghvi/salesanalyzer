@@ -1,8 +1,11 @@
 package com.qcom.salesanalyzer.gateway.service;
 
 import com.qcom.salesanalyzer.gateway.dto.DataRangeDto;
+import com.qcom.salesanalyzer.gateway.repository.SalesInsightRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -12,11 +15,13 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class InsightsService {
 
     private final EntityManager entityManager;
+    private final SalesInsightRepository salesInsightRepository;
 
     private static final Set<String> VALID_GRANULARITIES = Set.of("week", "month", "quarter", "year");
 
@@ -99,6 +104,13 @@ public class InsightsService {
         long fcDays = (fcMin != null && fcMax != null) ? ChronoUnit.DAYS.between(fcMin, fcMax) + 1 : 0;
 
         return new DataRangeDto(actMin, actMax, actDays, fcMin, fcMax, fcDays);
+    }
+
+    @Transactional
+    public void refreshSummaryForTenant(UUID tenantId) {
+        log.info("Refreshing sales_insights_summary for tenant {}", tenantId);
+        salesInsightRepository.refreshSummaryForTenant(tenantId);
+        log.info("Summary refreshed for tenant {}", tenantId);
     }
 
     private LocalDate computeFromDate(String period) {

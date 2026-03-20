@@ -8,4 +8,7 @@ public interface RefreshInsightsActivity {
 
     @ActivityMethod
     void refreshMaterializedView();
+
+    @ActivityMethod
+    void refreshSummaryForTenant(String tenantId);
 }

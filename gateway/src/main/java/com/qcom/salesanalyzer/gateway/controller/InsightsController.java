@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -67,5 +68,11 @@ public class InsightsController {
     @GetMapping("/{tenantId}/data-range")
     public ResponseEntity<DataRangeDto> getDataRange(@PathVariable UUID tenantId) {
         return ResponseEntity.ok(insightsService.getDataRange(tenantId));
+    }
+
+    @PostMapping("/{tenantId}/refresh")
+    public ResponseEntity<Map<String, String>> refreshSummary(@PathVariable UUID tenantId) {
+        insightsService.refreshSummaryForTenant(tenantId);
+        return ResponseEntity.ok(Map.of("status", "OK", "tenantId", tenantId.toString()));
     }
 }
