@@ -2,6 +2,8 @@
 
 PostgreSQL schema definitions for the SalesAnalyzer platform.
 
+![Database Schema](../design/salesanalyzer_db.png)
+
 ## Schema
 
 Multi-tenant star schema for sales reporting and forecasting.
